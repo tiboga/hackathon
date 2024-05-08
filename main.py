@@ -3,6 +3,8 @@ from flask import Flask, render_template, redirect, url_for
 from flask_login import LoginManager, current_user
 from flask_restful import Api
 from waitress import serve
+from data import db_session
+from data.users import User
 
 app = Flask(__name__)
 
@@ -14,6 +16,10 @@ login_manager.login_message = "Авторизация успешно выпол�
 login_manager.init_app(app)
 api = Api(app)
 
+@login_manager.user_loader
+def load_user(user_id):
+    db_sess = db_session.create_session()
+    return db_sess.query(User).get(user_id)
 
 @app.route("/")
 def main_page():
@@ -23,8 +29,7 @@ def main_page():
 
 
 def main():
-    serve(app, host="0.0.0.0", port=5000)
-    # app.run("", port=5000)
+    app.run("127.0.0.1", port=5000)
 
 
 if __name__ == '__main__':
