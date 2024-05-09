@@ -23,9 +23,24 @@ def load_user(user_id):
 
 @app.route("/")
 def main_page():
+    print(current_user.is_authenticated)
     if current_user.is_authenticated:
         return None
-    return render_template("index.html")
+    return render_template("main_page.html")
+@app.route("/login")
+def login():
+    return render_template("name_html.html")
+@app.route("/registration")
+def registration():
+    return render_template("name_html.html")
+@app.route("/profile")
+def profile():
+    return render_template("name_html.html")
+@app.route("/top")
+def top():
+    return render_template("name_html.html")
+
+
 
 
 def main():
