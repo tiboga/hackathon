@@ -16,34 +16,43 @@ login_manager.login_message = "Авторизация успешно выпол�
 login_manager.init_app(app)
 api = Api(app)
 
+
 @login_manager.user_loader
 def load_user(user_id):
+    print('load_user')
     db_sess = db_session.create_session()
     return db_sess.query(User).get(user_id)
 
+
 @app.route("/")
 def main_page():
-    print(current_user.is_authenticated)
     if current_user.is_authenticated:
         return None
     return render_template("main_page.html")
+
+
 @app.route("/login")
 def login():
     return render_template("name_html.html")
+
+
 @app.route("/registration")
 def registration():
     return render_template("name_html.html")
+
+
 @app.route("/profile")
 def profile():
     return render_template("name_html.html")
+
+
 @app.route("/top")
 def top():
     return render_template("name_html.html")
 
 
-
-
 def main():
+    db_session.global_init("db/main.db")
     app.run("127.0.0.1", port=5000)
 
 
