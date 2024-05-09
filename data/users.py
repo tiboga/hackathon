@@ -17,6 +17,7 @@ class User(SqlAlchemyBase, UserMixin):
                                      default=datetime.datetime.now, nullable=True)
     password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     count_points = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)
 
