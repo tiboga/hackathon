@@ -33,12 +33,16 @@ def main_page():
 
 @app.route("/login")
 def login():
+    if current_user.is_authenticated:
+        return redirect("/")
     form = LoginForm()
     return render_template("login_page.html", title="Авторизация", form=form)
 
 
 @app.route("/registration")
 def registration():
+    if current_user.is_authenticated:
+        return redirect("/")
     form = RegisterForm()
     return render_template("register_page.html", title="Регистрация", form=form)
 
