@@ -11,15 +11,15 @@ class User(SqlAlchemyBase, UserMixin):
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
                            primary_key=True, autoincrement=True)
-    login = sqlalchemy.Column(sqlalchemy.String, nullable=True, unique=True)
-    username = sqlalchemy.Column(sqlalchemy.String, nullable=True, unique=True)
-    created_date = sqlalchemy.Column(sqlalchemy.DateTime,
+    login = sqlalchemy.Column(sqlalchemy.Text, nullable=True, unique=True)
+    username = sqlalchemy.Column(sqlalchemy.Text, nullable=True, unique=True)
+    date_of_make = sqlalchemy.Column(sqlalchemy.DateTime,
                                      default=datetime.datetime.now, nullable=True)
-    password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    count_points = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    password = sqlalchemy.Column(sqlalchemy.Text, nullable=True)
+    count_points = sqlalchemy.Column(sqlalchemy.Integer, nullable=False)
 
     def set_password(self, password):
-        self.hashed_password = generate_password_hash(password)
+        self.password = generate_password_hash(password)
 
     def check_password(self, password):
-        return check_password_hash(self.hashed_password, password)
+        return check_password_hash(self.password, password)

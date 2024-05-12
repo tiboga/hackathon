@@ -7,8 +7,8 @@ class AchievementOfUser(SqlAlchemyBase):
     __tablename__ = 'tasks_of_users'
     id = sqlalchemy.Column(sqlalchemy.Integer,
                            primary_key=True, autoincrement=True)
-    task = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    user_answer = sqlalchemy.Column(sqlalchemy.String, nullable=False)
-    right_answer = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    task = sqlalchemy.Column(sqlalchemy.Text, nullable=True)
+    user_answer = sqlalchemy.Column(sqlalchemy.Text, nullable=False)
+    right_answer = sqlalchemy.Column(sqlalchemy.Text, nullable=True)
     resolved = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
     user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey(User.id), nullable=True)
