@@ -20,17 +20,17 @@ blueprint = flask.Blueprint(
     template_folder='templates'
 )
 
+
 @login_manager.user_loader
 def load_user(user_id):
     print('load_user')
     db_sess = db_session.create_session()
     return db_sess.query(User).get(user_id)
 
+
 # Клиентская часть
 @app.route("/")
 def main_page():
-    if current_user.is_authenticated:
-        return None
     return render_template("main_page.html")
 
 
@@ -75,14 +75,15 @@ def profile():
 def top():
     return render_template("name_html.html")
 
+
 @app.route("/logout")
 @login_required
 def logout():
     logout_user()
     return redirect("/")
+
+
 # Api
-
-
 
 
 def main():
