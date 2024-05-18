@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Математический Генератор</string>
+    <string name="welcome1">Добро</string>
+    <string name="welcome2">Пожаловать.</string>
+    <string name="login">Вход в аккаунт</string>
+    <string name="registration">Регистрация</string>
+    <string name="registration_btn">Зарегистрироваться</string>
+    <string name="login_button">Войти</string>
+    <string name="login_underline"><u>Войти</u></string>
+    <string name="text_email">Почта</string>
+    <string name="password">Пароль</string>
+    <string name="username">Имя пользователя</string>
+    <string name="repeat_password">Повторите пароль</string>
+    <string name="remember">Запомнить меня</string>
+    <string name="no_account">Еще нет аккаунта?</string>
+    <string name="account">Уже есть аккаунт?</string>
+    <string name="create">Зарегистрироваться</string>
+    <string name="create_underline"><u>Зарегистрироваться</u></string>
+
+
+</resources>
