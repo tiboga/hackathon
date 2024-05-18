@@ -70,7 +70,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
         }
         if (TextUtils.isEmpty(editTextName.getText().toString())) {
-            snackbarMake("Упс! Вы не ввели имя пользователя");
+            snackbarMake("Упс! Вы не ввели имя пользователя!");
             return;
 
         }
