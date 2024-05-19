@@ -57,7 +57,25 @@ def registration():
     if current_user.is_authenticated:
         flash('Вы уже вошли в аккаунт!', 'danger')
         return redirect('/')
-    form = RegisterForm()
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        username = request.form['username']
+        db_sess = db_session.create_session()
+        usernames_in_bd = db_sess.query(User).filter(User.username == username).first()
+        emails_in_bd = db_sess.query(User).filter(User.login == email).first()
+        if not usernames_in_bd and not emails_in_bd:
+            user = User(login=email, username=username, count_points=0)
+            user.set_password(password)
+            db_sess.add(user)
+            db_sess.commit()
+            return redirect('/')
+        else:
+            pass
+    return render_template('register_page.html', title='Регистрация')
+
+
+'''    form = RegisterForm()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
         usernames_in_bd = db_sess.query(User).filter(User.username == form.username.data).first()
@@ -70,7 +88,7 @@ def registration():
             return redirect('/')
         else:
             pass
-    return render_template("register_page.html", title="Регистрация", form=form)
+    return render_template("register_page.html", title="Регистрация", form=form)'''
 
 
 @app.route("/profile")
