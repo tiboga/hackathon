@@ -10,6 +10,11 @@ from data.users import User
 class RegisterForm(FlaskForm):
     login = EmailField("Login / email", validators=[DataRequired()])
 
+    def validate_login(form, field):
+        db_sess = db_session.create_session()
+        if db_sess.query(User).filter(User.login == field.data).first():
+            raise ValidationError("Такой пользователь уже существует")
+
     username = StringField("UserName")
     password = PasswordField("Password", validators=[DataRequired()])
     repeat_password = PasswordField("Repeat Password",

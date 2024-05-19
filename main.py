@@ -1,7 +1,5 @@
-import flask
-from flask import Flask, render_template, redirect
+from flask import Flask, render_template, redirect, flash
 from flask_login import LoginManager, current_user, login_required, logout_user, login_user
-from flask_restful import Api
 from forms.users import LoginForm, RegisterForm
 from data import db_session, api
 from data.users import User
@@ -19,6 +17,7 @@ def load_user(user_id):
     db_sess = db_session.create_session()
     return db_sess.query(User).get(user_id)
 
+
 # Клиентская часть
 @app.route("/")
 def main_page():
@@ -30,6 +29,7 @@ def main_page():
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
+        flash('Вы уже вошли в аккаунт!', 'danger')
         return redirect("/")
     form = LoginForm()
     if form.validate_on_submit():
@@ -37,13 +37,17 @@ def login():
         user = db_sess.query(User).filter(User.login == form.login.data).first()
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
+            return redirect('/')
+        flash("Неправильный логин или пароль", "danger")
+        return render_template("login_page.html", form=form)
     return render_template("login_page.html", title="Авторизация", form=form)
 
 
 @app.route("/registration", methods=['GET', 'POST'])
 def registration():
     if current_user.is_authenticated:
-        return redirect("/")
+        flash('Вы уже вошли в аккаунт!', 'danger')
+        return redirect('/')
     form = RegisterForm()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
@@ -54,6 +58,7 @@ def registration():
             user.set_password(form.password.data)
             db_sess.add(user)
             db_sess.commit()
+            return redirect('/')
         else:
             pass
     return render_template("register_page.html", title="Регистрация", form=form)
@@ -74,14 +79,12 @@ def profile():
 def top():
     return render_template("name_html.html")
 
+
 @app.route("/logout")
 @login_required
 def logout():
     logout_user()
     return redirect("/")
-
-
-
 
 
 
