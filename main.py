@@ -6,6 +6,8 @@ from flask_restful import Api
 from forms.users import LoginForm, RegisterForm
 from data import db_session
 from data.users import User
+import datetime
+from data.achievement_of_user import AchievementOfUser
 
 app = Flask(__name__)
 
@@ -94,7 +96,13 @@ def registration():
 @app.route("/profile")
 def profile():
     if current_user.is_authenticated:
-        return render_template("profile.html")
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.id == current_user.id).first()
+        username = user.username
+        mail = user.login
+        count_points = user.count_points
+        count_achievements = db_sess.query(AchievementOfUser).count()
+        return render_template("profile.html", username=username, email=mail, points=count_points)
     flash('Вы ещё не вошли в аккаунт!', 'danger')
     return redirect("/")
 

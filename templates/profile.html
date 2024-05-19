@@ -3,5 +3,62 @@
 {% block title %}Главная{% endblock %}
 
 {% block content %}
-<h1>PROFILE</h1>
+<script src="https://kit.fontawesome.com/b99e675b6e.js"></script>
+<script>
+    function getTimeMessage() {
+    var currentTime = new Date();
+    var currentHour = currentTime.getHours();
+
+    if (currentHour >= 0 && currentHour < 6) {
+        alert("Доброй ночи!");
+    } else if (currentHour >= 6 && currentHour < 12) {
+        alert("Доброе утро!");
+    } else if (currentHour >= 12 && currentHour < 18) {
+        alert("Добрый день!");
+    } else {
+        alert("Добрый вечер!");
+    }
+}
+
+getTimeMessage();
+</script>
+<link href="./static/profile.css" rel="stylesheet">
+<div class="wrapper">
+    <div class="left">
+    </div>
+    <div class="right">
+        <div class="info">
+            <h3>Здравствуйте, {{username}}!</h3>
+            <div class="info_data">
+                 <div class="data">
+                    <h4>Почта</h4>
+                    <p>{{email}}</p>
+                 </div>
+                 <div class="data">
+                   <h4>Баллы</h4>
+                    <p>{{points}}</p>
+              </div>
+            </div>
+        </div>
+
+      <div class="projects">
+            <h3>Достижения</h3>
+            <div class="projects_data">
+                 <div class="data">
+                    <h4>№1</h4>
+                    <p>Текст</p>
+                 </div>
+                 <div class="data">
+                   <h4>№2</h4>
+                    <p>Текст</p>
+              </div>
+            </div>
+        </div>
+
+        <div class="social_media">
+            <button class="btn btn-primary" name="document">Сменить данные</button>
+
+      </div>
+    </div>
+</div>
 {% endblock %}
