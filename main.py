@@ -5,6 +5,7 @@ from flask_restful import Api
 from forms.users import LoginForm, RegisterForm
 from data import db_session, api
 from data.users import User
+from data.achievement_of_user import AchievementOfUser
 
 app = Flask(__name__)
 
@@ -60,7 +61,13 @@ def registration():
 
 @app.route("/profile")
 def profile():
-    return render_template("name_html.html")
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).filter(User.id==current_user.id).first()
+    username = user.username
+    mail = user.login
+    count_points = user.count_points
+    count_achievements = db_sess.query(AchievementOfUser).count()
+    return render_template("name_html.html",username=username, mail=mail,count_points=count_points,count_achievements=count_achievements)
 
 
 @app.route("/top")
@@ -72,7 +79,8 @@ def top():
 def logout():
     logout_user()
     return redirect("/")
-# Api
+
+
 
 
 
