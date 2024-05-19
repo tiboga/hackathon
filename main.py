@@ -1,6 +1,6 @@
 import flask
 import requests
-from flask import Flask, render_template, redirect, url_for, flash
+from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_login import LoginManager, current_user, login_required, logout_user, login_user
 from flask_restful import Api
 from forms.users import LoginForm, RegisterForm
@@ -39,16 +39,17 @@ def login():
     if current_user.is_authenticated:
         flash('Вы уже вошли в аккаунт!', 'danger')
         return redirect("/")
-    form = LoginForm()
-    if form.validate_on_submit():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
         db_sess = db_session.create_session()
-        user = db_sess.query(User).filter(User.login == form.login.data).first()
-        if user and user.check_password(form.password.data):
-            login_user(user, remember=form.remember_me.data)
+        user = db_sess.query(User).filter(User.login == username).first()
+        if user and user.check_password(password):
+            login_user(user)
             return redirect('/')
         flash("Неправильный логин или пароль", "danger")
-        return render_template("login_page.html", form=form)
-    return render_template("login_page.html", title="Авторизация", form=form)
+        return render_template("login_page.html")
+    return render_template("login_page.html", title='Авторизация')
 
 
 @app.route("/registration", methods=['GET', 'POST'])
@@ -74,7 +75,10 @@ def registration():
 
 @app.route("/profile")
 def profile():
-    return render_template("name_html.html")
+    if current_user.is_authenticated:
+        return render_template("profile.html")
+    flash('Вы ещё не вошли в аккаунт!', 'danger')
+    return redirect("/")
 
 
 @app.route("/top")
