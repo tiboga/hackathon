@@ -1,10 +1,9 @@
 import flask
-import requests
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect
 from flask_login import LoginManager, current_user, login_required, logout_user, login_user
 from flask_restful import Api
 from forms.users import LoginForm, RegisterForm
-from data import db_session
+from data import db_session, api
 from data.users import User
 
 app = Flask(__name__)
@@ -13,13 +12,6 @@ app.config['SECRET_KEY'] = 'flask_project_secret_key'
 login_manager = LoginManager(app)
 login_manager.login_message = "Авторизация успешно выполнена"
 login_manager.init_app(app)
-api = Api(app)
-blueprint = flask.Blueprint(
-    'API_BD',
-    __name__,
-    template_folder='templates'
-)
-
 @login_manager.user_loader
 def load_user(user_id):
     print('load_user')
@@ -30,7 +22,7 @@ def load_user(user_id):
 @app.route("/")
 def main_page():
     if current_user.is_authenticated:
-        return None
+        return ''
     return render_template("main_page.html")
 
 
@@ -87,7 +79,7 @@ def logout():
 
 def main():
     db_session.global_init("db/main.db")
-    # app.register_blueprint(API_BD.blueprint)
+    app.register_blueprint(api.blueprint)
     app.run("127.0.0.1", port=5000)
 
 
