@@ -34,6 +34,20 @@
             android:textSize="85sp">
         </TextView>
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/skip_btn"
+            android:layout_width="110dp"
+            android:layout_height="30dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="35dp"
+            android:layout_marginEnd="21dp"
+            android:background="@drawable/text_background"
+            android:elevation="7dp"
+            android:fontFamily="@font/muller_bold"
+            android:text="@string/skip"
+            android:textColor="@color/grey_stroke"
+            android:textSize="11sp" />
+
 
     </RelativeLayout>
 

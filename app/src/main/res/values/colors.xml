@@ -6,4 +6,8 @@
     <color name="grey">#393939</color>
     <color name="grey_text">#8E8E8E</color>
     <color name="grey_stroke">#7E7E7E</color>
+    <color name="green2">#4CAF50</color>
+    <color name="yellow">#FFEB3B</color>
+    <color name="red">#F44336</color>
+
 </resources>

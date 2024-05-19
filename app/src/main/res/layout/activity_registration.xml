@@ -13,7 +13,7 @@
         android:layout_above="@id/card_view"
         android:padding="0dp">
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/backButton"
             android:layout_width="30dp"
             android:layout_height="30dp"
@@ -22,25 +22,25 @@
             android:background="@drawable/ic_back"/>
 
         <TextView
-            android:layout_width="165dp"
+            android:layout_width="172dp"
             android:layout_height="wrap_content"
             android:fontFamily="@font/extenda40"
             android:text="Создать"
             android:layout_marginTop="35dp"
             android:textColor="@color/green"
             android:layout_marginStart="15dp"
-            android:textSize="80sp">
+            android:textSize="85sp">
         </TextView>
 
         <TextView
-            android:layout_width="160dp"
+            android:layout_width="168dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="187dp"
-            android:layout_marginTop="35dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="110dp"
             android:fontFamily="@font/extenda40"
-            android:text="аккаунт"
+            android:text="Аккаунт"
             android:textColor="@color/grey"
-            android:textSize="80sp">
+            android:textSize="85sp">
 
         </TextView>
 

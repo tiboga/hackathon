@@ -30,6 +30,10 @@ public class RegistrationActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent intentLog = new Intent(RegistrationActivity.this, LoginActivity.class);
+                intentLog.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivityForResult(intentLog, 0);
+                overridePendingTransition(0,0);
                 finish();
             }
         });
@@ -37,7 +41,11 @@ public class RegistrationActivity extends AppCompatActivity {
         textViewReg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                textViewReg.setText(R.string.create_underline);
+                textViewReg.setText(R.string.login_underline);
+                Intent intentLog = new Intent(RegistrationActivity.this, LoginActivity.class);
+                intentLog.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivityForResult(intentLog, 0);
+                overridePendingTransition(0,0);
                 finish();
             }
         });

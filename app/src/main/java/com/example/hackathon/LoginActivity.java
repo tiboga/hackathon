@@ -17,7 +17,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 public class LoginActivity extends AppCompatActivity {
 
-    Button login_button;
+    Button login_button, skip_btn;
     EditText editTextEmail, editTextPassword;
     TextView textViewCreate;
     @Override
@@ -25,6 +25,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        skip_btn = findViewById(R.id.skip_btn);
         login_button = findViewById(R.id.login_button);
         textViewCreate = findViewById(R.id.textViewCreate);
 
@@ -41,6 +42,16 @@ public class LoginActivity extends AppCompatActivity {
                 Intent intentLog = new Intent(LoginActivity.this, RegistrationActivity.class);
                 intentLog.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivityForResult(intentLog, 0);
+                overridePendingTransition(0,0);
+                finish();
+            }
+        });
+        skip_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivityForResult(intent, 0);
                 overridePendingTransition(0,0);
                 finish();
             }
