@@ -48,6 +48,7 @@ def login():
         user = db_sess.query(User).filter(User.login == username).first()
         if user and user.check_password(password):
             login_user(user, remember=True)
+            flash('Вы успешно вошли в аккаунт!', 'success')
             return redirect('/')
         flash("Неправильный логин или пароль", "danger")
         return render_template("login_page.html")
@@ -71,6 +72,8 @@ def registration():
             user.set_password(password)
             db_sess.add(user)
             db_sess.commit()
+            login_user(user, remember=True)
+            flash('Вы успешно зарегистрировались!', 'success')
             return redirect('/')
         else:
             pass
