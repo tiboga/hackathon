@@ -47,7 +47,7 @@ def login():
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.login == username).first()
         if user and user.check_password(password):
-            login_user(user)
+            login_user(user, remember=True)
             return redirect('/')
         flash("Неправильный логин или пароль", "danger")
         return render_template("login_page.html")
