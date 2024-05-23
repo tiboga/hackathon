@@ -8,6 +8,7 @@ from data import db_session
 from data.users import User
 import datetime
 from data.achievement_of_user import AchievementOfUser
+import datetime
 
 app = Flask(__name__)
 
@@ -105,7 +106,16 @@ def profile():
         mail = user.login
         count_points = user.count_points
         count_achievements = db_sess.query(AchievementOfUser).count()
-        return render_template("profile.html", username=username, email=mail, points=count_points)
+        now = datetime.datetime.now()
+        if now.hour >= 6 and now.hour < 12:
+            greeting = 'Доброе утро,'
+        elif now.hour >= 12 and now.hour < 18:
+            greeting = 'Добрый день,'
+        elif now.hour >= 18 and now.hour < 24:
+            greeting = 'Добрый вечер,'
+        else:
+            greeting = 'Доброй ночи,'
+        return render_template("profile.html", username=username, email=mail, points=count_points, greeting=greeting)
     flash('Вы ещё не вошли в аккаунт!', 'danger')
     return redirect("/")
 
