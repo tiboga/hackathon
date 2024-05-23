@@ -11,6 +11,8 @@ app.config['SECRET_KEY'] = 'flask_project_secret_key'
 login_manager = LoginManager(app)
 login_manager.login_message = "Авторизация успешно выполнена"
 login_manager.init_app(app)
+
+
 @login_manager.user_loader
 def load_user(user_id):
     print('load_user')
@@ -67,17 +69,24 @@ def registration():
 @app.route("/profile")
 def profile():
     db_sess = db_session.create_session()
-    user = db_sess.query(User).filter(User.id==current_user.id).first()
+    user = db_sess.query(User).filter(User.id == current_user.id).first()
     username = user.username
     mail = user.login
     count_points = user.count_points
     count_achievements = db_sess.query(AchievementOfUser).count()
-    return render_template("name_html.html",username=username, mail=mail,count_points=count_points,count_achievements=count_achievements)
+    return render_template("name_html.html", username=username, mail=mail, count_points=count_points,
+                           count_achievements=count_achievements)
 
 
 @app.route("/top")
 def top():
-    return render_template("name_html.html")
+    db_sess = db_session.create_session()
+    users_of_top = db_sess.query(User).all()
+    users_of_top_10 = sorted(users_of_top, key=lambda x: x.count_points, reverse=True)[:10]
+    dict_of_top10_user = dict()
+    for i in range(len(users_of_top_10)):
+        dict_of_top10_user[i + 1] = users_of_top_10[i]
+    return render_template("name_html.html", top_users=dict_of_top10_user)
 
 
 @app.route("/logout")
@@ -85,7 +94,6 @@ def top():
 def logout():
     logout_user()
     return redirect("/")
-
 
 
 def main():
