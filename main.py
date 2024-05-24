@@ -76,6 +76,10 @@ def registration():
             login_user(user, remember=True)
             flash('Вы успешно зарегистрировались!', 'success')
             return redirect('/')
+        elif usernames_in_bd:
+            flash('Такое имя пользователя уже зарегистрировано!', 'danger')
+        elif emails_in_bd:
+            flash('Такой адрес электронной почты уже зарегистрирован!', 'danger')
         else:
             pass
     return render_template('register_page.html', title='Регистрация')
