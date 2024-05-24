@@ -30,3 +30,120 @@ div.change_name{
 a.button:hover {
     background-color: #f89d13
 }
+a.button_pt {
+    display: inline-block;
+    background: #57a639;
+    color: #fff;
+    padding: 12px;
+    border-radius: 3px;
+    text-decoration: none;
+    font-family: Tahoma;
+    font-size: 18px;
+    line-height: 1;
+    font-weight: 100;
+}
+div.pass_tasks {
+    margin: 4px;
+    text-align: right;
+}
+.chart {
+  font-family: Arial, sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: normal;
+  text-align: center;
+  color: #1d4a61;
+  max-width: 478px;
+  width: 100%;
+  height: 350px;
+  background-color: #151719;
+}
+
+.chart-wrap {
+  padding: 20px 40px;
+}
+
+.chart-row {
+  display: flex;
+  justify-content: space-aroumd;
+}
+
+.chart-row-second {
+  border-bottom: 1px solid #d5c3fa;
+  margin-bottom: 10px;
+}
+
+.chart-td {
+  width: 100px;
+  display: inline-flex;
+  justify-content: center;
+}
+
+.chart-col-blue {
+  display: inline-block;
+  width: 40px;
+  height: 54px;
+  background-color: #144f6b;
+  box-shadow: 4px 4px 20px 0 rgba(0, 0, 0, 0.5);
+}
+
+.chart-col-purple {
+  display: inline-flex;
+  justify-content: flex-end;
+  flex-direction: column;
+  width: 40px;
+  height: 160px;
+  background-color: transparent;
+/*   box-shadow: 4px 4px 20px 0 rgba(0, 0,     0, 0.5); */
+}
+
+.chart-col-purple-second,
+.chart-col-purple-third,
+.chart-col-purple-fourth {
+  display: inline-block;
+  background-color: #9990c6;
+  box-shadow: 4px 4px 20px 0 rgba(0, 0, 0, 0.5);
+}
+
+.chart-col-purple-second {
+  height: 20px;
+  width: 40px;
+}
+
+.chart-col-purple-third {
+  height: 40px;
+  width: 40px
+}
+
+.chart-col-purple-fourth {
+  height: 80px;
+  width: 40px;
+}
+
+.chart-rate {
+  margin-bottom: 10px;
+  display: inline-flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.chart-sign {
+  display: inline-block;
+}
+
+.chart-triangle {
+  display: inline-block;
+  width: 10px;
+  position: relative;
+}
+
+.chart-triangle::before {
+    content: '';
+    position: absolute;
+    left: 1px;
+    bottom: 3px;
+    border: 4px solid transparent;
+    border-top: 8px solid #9990c6;;
+    transform: rotate(180deg);
+}
