@@ -85,7 +85,7 @@ def top():
     users_of_top_10 = sorted(users_of_top, key=lambda x: x.count_points, reverse=True)[:10]
     dict_of_top10_user = dict()
     for i in range(len(users_of_top_10)):
-        dict_of_top10_user[i + 1] = users_of_top_10[i]
+        dict_of_top10_user[i + 1] = {"name": users_of_top_10[i].username, "countpoints":users_of_top_10[i].count_points}
     return render_template("name_html.html", top_users=dict_of_top10_user)
 
 
