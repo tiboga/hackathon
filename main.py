@@ -133,7 +133,8 @@ def top():
     users_of_top_10 = sorted(users_of_top, key=lambda x: x.count_points, reverse=True)[:10]
     dict_of_top10_user = dict()
     for i in range(len(users_of_top_10)):
-        dict_of_top10_user[i + 1] = {"name": users_of_top_10[i].username, "countpoints":users_of_top_10[i].count_points}
+        dict_of_top10_user[i + 1] = {"name": users_of_top_10[i].username,
+                                     "countpoints": users_of_top_10[i].count_points}
     return render_template("raiting.html", top_users=dict_of_top10_user)
 
 
@@ -143,6 +144,23 @@ def logout():
     logout_user()
     return redirect("/")
 
+
+@app.route('/change_data')
+def change_data():
+    if current_user.is_authenticated:
+        if request.method == 'POST':
+            newname = request.form['nickname']
+            password = request.form['password']
+            db_sess = db_session.create_session()
+            usernames_in_bd = db_sess.query(User).filter(User.username == newname).first()
+            if not usernames_in_bd and len(newname) < 22:
+                user = User(username=newname)
+                db_sess.add(user)
+                db_sess.commit()
+        return render_template('change_data.html', title='Смена данных')
+    else:
+        flash('Вы ещё не вошли в аккаунт!', 'danger')
+        return redirect('/')
 
 # Api
 

@@ -3,6 +3,44 @@
 {% block title %}Главная{% endblock %}
 
 {% block content %}
+<script>
+  function showPopup() {
+    // Создаем элементы всплывающего меню
+    var popup = document.createElement('div');
+    var text = document.createElement('p');
+    var input = document.createElement('input');
+    var button = document.createElement('button');
+
+    // Добавляем текст и атрибуты к элементам
+    text.textContent = 'Введите новое имя:';
+    input.setAttribute('type', 'text');
+    button.textContent = 'Подтвердить';
+
+    // Добавляем стили к всплывающему меню
+    popup.style.position = 'fixed';
+    popup.style.top = '50%';
+    popup.style.left = '50%';
+    popup.style.transform = 'translate(-50%, -50%)';
+    popup.style.backgroundColor = '#fff';
+    popup.style.padding = '20px';
+    popup.style.border = '1px solid #000';
+
+    // Добавляем элементы к всплывающему меню
+    popup.appendChild(text);
+    popup.appendChild(input);
+    popup.appendChild(button);
+
+    // Добавляем всплывающее меню на страницу
+    document.body.appendChild(popup);
+
+    // Добавляем обработчик события для кнопки подтверждения
+    button.addEventListener('click', function() {
+        var newName = input.value;
+        alert('Вы ввели имя: ' + newName);
+        document.body.removeChild(popup);
+    });
+}
+</script>
 <script src="https://kit.fontawesome.com/b99e675b6e.js"></script>
 <link href="./static/profile.css" rel="stylesheet">
 <body>
@@ -19,7 +57,7 @@
 </div>
 <div class="other">
     <div class="change_name">
-        <a class="button" href="/">Сменить имя</a>
+        <a class="button" href="/change_data">Сменить имя</a>
     </div>
     <div class="pass_tasks">
         <a class="button_pt" href="/">Пропущенные примеры</a>
