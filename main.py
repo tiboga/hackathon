@@ -68,7 +68,7 @@ def registration():
         db_sess = db_session.create_session()
         usernames_in_bd = db_sess.query(User).filter(User.username == username).first()
         emails_in_bd = db_sess.query(User).filter(User.login == email).first()
-        if not usernames_in_bd and not emails_in_bd:
+        if not usernames_in_bd and not emails_in_bd and len(username) < 22:
             user = User(login=email, username=username, count_points=0)
             user.set_password(password)
             db_sess.add(user)
@@ -80,6 +80,8 @@ def registration():
             flash('Такое имя пользователя уже зарегистрировано!', 'danger')
         elif emails_in_bd:
             flash('Такой адрес электронной почты уже зарегистрирован!', 'danger')
+        elif len(username) > 21:
+            flash('Никнейм не может быть длиннее, чем 21 символ!', 'danger')
         else:
             pass
     return render_template('register_page.html', title='Регистрация')
@@ -126,7 +128,13 @@ def profile():
 
 @app.route("/top")
 def top():
-    return render_template("name_html.html")
+    db_sess = db_session.create_session()
+    users_of_top = db_sess.query(User).all()
+    users_of_top_10 = sorted(users_of_top, key=lambda x: x.count_points, reverse=True)[:10]
+    dict_of_top10_user = dict()
+    for i in range(len(users_of_top_10)):
+        dict_of_top10_user[i + 1] = {"name": users_of_top_10[i].username, "countpoints":users_of_top_10[i].count_points}
+    return render_template("raiting.html", top_users=dict_of_top10_user)
 
 
 @app.route("/logout")
