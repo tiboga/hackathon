@@ -9,6 +9,7 @@ from data.users import User
 import datetime
 from data.achievement_of_user import AchievementOfUser
 import datetime
+from profile_graphs import generate_progress_charts
 
 app = Flask(__name__)
 
@@ -121,7 +122,13 @@ def profile():
             greeting = 'Добрый вечер,'
         else:
             greeting = 'Доброй ночи,'
-        return render_template("profile.html", username=username, email=mail, points=count_points, greeting=greeting)
+        user_data = {
+            'dates': ['2024-05-01', '2024-05-02', '2024-05-03', '2024-05-04', '2024-05-05'],
+            'correct': [10, 15, 20, 25, 30],
+            'incorrect': [2, 1, 3, 2, 1]
+        }
+        filename = generate_progress_charts(user_data, correct_color='green', incorrect_color='orange', filename='graph.png')
+        return render_template("profile.html", username=username, email=mail, points=count_points, greeting=greeting, filename=filename)
     flash('Вы ещё не вошли в аккаунт!', 'danger')
     return redirect("/")
 
