@@ -1,3 +1,5 @@
+import random
+from generation import generate_example
 import flask
 import requests
 from flask import Flask, render_template, redirect, url_for, flash, request
@@ -34,7 +36,10 @@ def load_user(user_id):
 # Клиентская часть
 @app.route("/")
 def main_page():
-    return render_template("main_page.html")
+    levels = ['easy', 'medium', 'hard']
+    action = ['addition', 'subtraction', 'multiplication', 'division', 'equality', 'quadratic']
+    a = generate_example(levels[random.randint(0, 2)], action[random.randint(0, 5)])
+    return render_template("main_page.html", a=a)
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -161,6 +166,7 @@ def change_data():
     else:
         flash('Вы ещё не вошли в аккаунт!', 'danger')
         return redirect('/')
+
 
 # Api
 

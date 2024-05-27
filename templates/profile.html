@@ -5,18 +5,15 @@
 {% block content %}
 <script>
   function showPopup() {
-    // Создаем элементы всплывающего меню
     var popup = document.createElement('div');
     var text = document.createElement('p');
     var input = document.createElement('input');
     var button = document.createElement('button');
 
-    // Добавляем текст и атрибуты к элементам
     text.textContent = 'Введите новое имя:';
     input.setAttribute('type', 'text');
     button.textContent = 'Подтвердить';
 
-    // Добавляем стили к всплывающему меню
     popup.style.position = 'fixed';
     popup.style.top = '50%';
     popup.style.left = '50%';
@@ -25,15 +22,12 @@
     popup.style.padding = '20px';
     popup.style.border = '1px solid #000';
 
-    // Добавляем элементы к всплывающему меню
     popup.appendChild(text);
     popup.appendChild(input);
     popup.appendChild(button);
 
-    // Добавляем всплывающее меню на страницу
     document.body.appendChild(popup);
 
-    // Добавляем обработчик события для кнопки подтверждения
     button.addEventListener('click', function() {
         var newName = input.value;
         alert('Вы ввели имя: ' + newName);

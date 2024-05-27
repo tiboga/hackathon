@@ -3,88 +3,77 @@
 {% block title %}Главная{% endblock %}
 
 {% block content %}
-<head>
-    <title>Math Examples</title>
-    <style>
-        body {
-            text-align: center;
-            font-family: Arial, sans-serif;
-        }
-        #mathExample {
-            font-size: 24px;
-            margin-top: 20px;
-        }
-        #answer {
-            margin-top: 10px;
-        }
-    </style>
-</head>
-<body>
-    <h1>Math Examples</h1>
-    <div id="mathExample"></div>
-    <input type="text" id="userAnswer" placeholder="Enter your answer">
-    <br>
-    <button onclick="generateNewExample()">Next</button>
-    <button onclick="checkAnswer()">Check</button>
-    <button onclick="skipExample()">Skip</button>
+<link rel="stylesheet" type="text/css" href="static/main.css">
+<h2 align="center" style="color:#E0FFFF">Математический генератор</h2>
+<style>
+body {
+    background-color: #434750;
+}
+form{
+    height: 520px;
+    width: 400px;
+    background-color: rgba(255,255,255,0.13);
+    position: absolute;
+    transform: translate(-50%,-50%);
+    top: 50%;
+    left: 50%;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255,255,255,0.1);
+    box-shadow: 0 0 40px rgba(8,7,16,0.6);
+    padding: 50px 35px;
+}
+label{
+    display: block;
+    margin-top: 30px;
+    font-size: 16px;
+    font-weight: 500;
+}
+form h3{
+    font-size: 40px;
+    font-weight: 500;
+    line-height: 42px;
+    text-align: center;
+}
+input{
+    display: block;
+    height: 50px;
+    width: 100%;
+    background-color: rgba(242, 221, 198, 0.07);
+    border-radius: 3px;
+    padding: 0 10px;
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 300;
+}
+.dropdown {
+     position: relative;
+     display: inline-block;
+}
+.dropdown-content {
+     display: none;
+     position: absolute;
+     right: 0;
+     background-color: #f9f9f9;
+     min-width: 120px;
+     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+     z-index: 1;
+}
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+</style>
+<form action="for output data">
+    <h3>{{a[0]}}</h3>
+    <label class="form-label">
+        <input type="text" id="answer" placeholder="Ответ">
+    </label>
+    {% if current_user.is_authenticated %}
+    <button type="submit" class="btn btn-primary">Пропустить</button>
+    {% endif %}
+    <button type="submit" class="btn btn-primary">Следующий</button>
+    <div class="dropdown">
+</div>
+</form>
 
-    <script>
-        let currentExample;
-        let correctAnswer;
-
-        function generateNewExample() {
-            let difficulty = Math.floor(Math.random() * 3); // 0 - easy, 1 - medium, 2 - hard
-
-            switch (difficulty) {
-                case 0:
-                    currentExample = generateEasyExample();
-                    break;
-                case 1:
-                    currentExample = generateMediumExample();
-                    break;
-                case 2:
-                    currentExample = generateHardExample();
-                    break;
-            }
-
-            document.getElementById("mathExample").innerText = currentExample;
-        }
-
-        function generateEasyExample() {
-            let number1 = Math.floor(Math.random() * 10);
-            let number2 = Math.floor(Math.random() * 10);
-            correctAnswer = number1 + number2;
-            return ${number1} + ${number2};
-        }
-
-        function generateMediumExample() {
-            let number1 = Math.floor(Math.random() * 10);
-            let number2 = Math.floor(Math.random() * 10);
-            correctAnswer = number1 * number2;
-            return ${number1} * ${number2};
-        }
-
-        function generateHardExample() {
-            let a = Math.floor(Math.random() * 5) + 1;
-            correctAnswer = -a;
-            return x^2 + ${a}x + ${a} = 0;
-        }
-
-        function checkAnswer() {
-            let userAnswer = document.getElementById("userAnswer").value;
-
-            if (parseInt(userAnswer) === correctAnswer) {
-                alert("Correct!");
-            } else {
-                alert("Incorrect. The correct answer is: " + correctAnswer);
-            }
-        }
-
-        function skipExample() {
-            generateNewExample();
-        }
-
-        generateNewExample();
-    </script>
-</body>
 {% endblock %}
