@@ -25,6 +25,9 @@ blueprint = flask.Blueprint(
     __name__,
     template_folder='templates'
 )
+levels = ['easy', 'medium', 'hard']
+action = ['addition', 'subtraction', 'multiplication', 'division', 'equality', 'quadratic']
+a = generate_example(levels[random.randint(0, 2)], action[random.randint(0, 5)])
 
 
 @login_manager.user_loader
@@ -35,11 +38,12 @@ def load_user(user_id):
 
 
 # Клиентская часть
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 def main_page():
-    levels = ['easy', 'medium', 'hard']
-    action = ['addition', 'subtraction', 'multiplication', 'division', 'equality', 'quadratic']
-    a = generate_example(levels[random.randint(0, 2)], action[random.randint(0, 5)])
+    if request.method == 'POST':
+        answer = request.form['answer']
+        if answer == a[1]:
+            flash('Ответ верный!', 'success')
     return render_template("main_page.html", a=a)
 
 
@@ -132,8 +136,10 @@ def profile():
             'correct': [10, 15, 20, 25, 30],
             'incorrect': [2, 1, 3, 2, 1]
         }
-        filename = generate_progress_charts(user_data, correct_color='green', incorrect_color='orange', filename='graph.png')
-        return render_template("profile.html", username=username, email=mail, points=count_points, greeting=greeting, filename=filename)
+        filename = generate_progress_charts(user_data, correct_color='green', incorrect_color='orange',
+                                            filename='graph.png')
+        return render_template("profile.html", username=username, email=mail, points=count_points, greeting=greeting,
+                               filename=filename)
     flash('Вы ещё не вошли в аккаунт!', 'danger')
     return redirect("/")
 

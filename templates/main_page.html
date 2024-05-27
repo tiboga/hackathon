@@ -63,17 +63,15 @@ input{
     display: block;
 }
 </style>
-<form action="for output data">
+<form method="post" action="/">
     <h3>{{a[0]}}</h3>
     <label class="form-label">
-        <input type="text" id="answer" placeholder="Ответ">
+        <input type="text" name="answer" placeholder="Ответ">
     </label>
     {% if current_user.is_authenticated %}
     <button type="submit" class="btn btn-primary">Пропустить</button>
     {% endif %}
-    <button type="submit" class="btn btn-primary">Следующий</button>
-    <div class="dropdown">
-</div>
+    <button type="submit" class="btn btn-primary">Проверить</button>
 </form>
 
 {% endblock %}
