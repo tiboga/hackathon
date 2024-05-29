@@ -25,9 +25,6 @@ blueprint = flask.Blueprint(
     __name__,
     template_folder='templates'
 )
-levels = ['easy', 'medium', 'hard']
-action = ['addition', 'subtraction', 'multiplication', 'division', 'equality', 'quadratic']
-a = generate_example(levels[random.randint(0, 2)], action[random.randint(0, 5)])
 
 
 @login_manager.user_loader
@@ -40,6 +37,9 @@ def load_user(user_id):
 # Клиентская часть
 @app.route("/", methods=['GET', 'POST'])
 def main_page():
+    levels = ['easy', 'medium', 'hard']
+    action = ['addition', 'subtraction', 'multiplication', 'division', 'equality', 'quadratic']
+    a = generate_example(levels[random.randint(0, 2)], action[random.randint(0, 5)])
     if request.method == 'POST':
         answer = request.form['answer']
     return render_template("main_page.html", a=a)
