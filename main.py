@@ -44,6 +44,12 @@ def main_page():
         answer = request.form['answer']
         if answer == a[1]:
             flash('Ответ верный!', 'success')
+            if current_user.is_authenticated:
+                print('+1 ball')
+            else:
+                pass
+        else:
+            pass
     return render_template("main_page.html", a=a)
 
 
