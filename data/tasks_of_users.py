@@ -3,7 +3,7 @@ from .users import User
 from .db_session import SqlAlchemyBase
 
 
-class AchievementOfUser(SqlAlchemyBase):
+class TaskOfUsers(SqlAlchemyBase):
     __tablename__ = 'tasks_of_users'
     id = sqlalchemy.Column(sqlalchemy.Integer,
                            primary_key=True, autoincrement=True)
