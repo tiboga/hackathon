@@ -3,5 +3,75 @@
 {% block title %}Главная{% endblock %}
 
 {% block content %}
-<h1>SOON</h1>
+<link rel="stylesheet" type="text/css" href="static/main.css">
+<h2 align="center" style="color:#E0FFFF">Математический генератор</h2>
+<style>
+body {
+    background-color: #434750;
+}
+form{
+    height: 520px;
+    width: 400px;
+    background-color: rgba(255,255,255,0.13);
+    position: absolute;
+    transform: translate(-50%,-50%);
+    top: 50%;
+    left: 50%;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255,255,255,0.1);
+    box-shadow: 0 0 40px rgba(8,7,16,0.6);
+    padding: 50px 35px;
+}
+label{
+    display: block;
+    margin-top: 30px;
+    font-size: 16px;
+    font-weight: 500;
+}
+form h3{
+    font-size: 40px;
+    font-weight: 500;
+    line-height: 42px;
+    text-align: center;
+}
+input{
+    display: block;
+    height: 50px;
+    width: 100%;
+    background-color: rgba(242, 221, 198, 0.07);
+    border-radius: 3px;
+    padding: 0 10px;
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 300;
+}
+.dropdown {
+     position: relative;
+     display: inline-block;
+}
+.dropdown-content {
+     display: none;
+     position: absolute;
+     right: 0;
+     background-color: #f9f9f9;
+     min-width: 120px;
+     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+     z-index: 1;
+}
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+</style>
+<form method="post" action="/">
+    <h3>{{a[0]}}</h3>
+    <label class="form-label">
+        <input type="text" name="answer" placeholder="Ответ">
+    </label>
+    {% if current_user.is_authenticated %}
+    <button type="submit" class="btn btn-primary">Пропустить</button>
+    {% endif %}
+    <button type="submit" class="btn btn-primary">Проверить</button>
+</form>
+
 {% endblock %}

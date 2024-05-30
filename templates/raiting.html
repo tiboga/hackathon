@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Рейтинг пользователей</title>
+<style>
+    body {
+        background-color: #232C16;
+    }
+    table {
+        width: 50%;
+        margin: 20px auto;
+        border-collapse: collapse;
+        background-color: #181513;
+    }
+    th, td {
+        border: 1px solid black;
+        padding: 10px;
+        text-align: center;
+        background-color: white;
+    }
+    th {
+        background-color: #808080;
+    }
+    h2 {
+        text-align: center;
+        color: white;
+    }
+</style>
+</head>
+<body>
+<h2>Рейтинг лучших</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Пользователь</th>
+            <th>Баллы</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{top_users[1]['name']}}</td>
+            <td>{{top_users[1]['countpoints']}}</td>
+        </tr>
+        <tr>
+            <td>{{top_users[2]['name']}}</td>
+            <td>{{top_users[2]['countpoints']}}</td>
+        </tr>
+        <tr>
+            <td>{{top_users[3]['name']}}</td>
+            <td>{{top_users[3]['countpoints']}}</td>
+        </tr>
+        <tr>
+            <td>{{top_users[4]['name']}}</td>
+            <td>{{top_users[4]['countpoints']}}</td>
+        </tr>
+        <tr>
+            <td>{{top_users[5]['name']}}</td>
+            <td>{{top_users[5]['countpoints']}}</td>
+        </tr>
+        <tr>
+            <td>{{top_users[6]['name']}}</td>
+            <td>{{top_users[6]['countpoints']}}</td>
+        </tr>
+        <tr>
+            <td>{{top_users[7]['name']}}</td>
+            <td>{{top_users[7]['countpoints']}}</td>
+        </tr>
+        <tr>
+            <td>{{top_users[8]['name']}}</td>
+            <td>{{top_users[8]['countpoints']}}</td>
+        </tr>
+        <tr>
+            <td>{{top_users[9]['name']}}</td>
+            <td>{{top_users[9]['countpoints']}}</td>
+        </tr>
+        <tr>
+            <td>{{top_users[10]['name']}}</td>
+            <td>{{top_users[10]['countpoints']}}</td>
+        </tr>
+    </tbody>
+</table>
+
+</body>
+{% endblock %}
