@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<body>
+    <div class="background">
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+    <form method="post" action="/change_data">
+        <h3>Смена имени</h3>
+        <label for="" class="form-label">Новое имя</label>
+        <input placeholder="NickName" name="nickname">
+
+        <label for="" class="form-label">Введите пароль</label>
+        <input placeholder="Password" name="password">
+
+        <button type="submit" class="btn btn-primary">Подтвердить</button>
+    </form>
+</body>
+
+{% endblock %}

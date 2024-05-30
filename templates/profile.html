@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<script>
+  function showPopup() {
+    var popup = document.createElement('div');
+    var text = document.createElement('p');
+    var input = document.createElement('input');
+    var button = document.createElement('button');
+
+    text.textContent = 'Введите новое имя:';
+    input.setAttribute('type', 'text');
+    button.textContent = 'Подтвердить';
+
+    popup.style.position = 'fixed';
+    popup.style.top = '50%';
+    popup.style.left = '50%';
+    popup.style.transform = 'translate(-50%, -50%)';
+    popup.style.backgroundColor = '#fff';
+    popup.style.padding = '20px';
+    popup.style.border = '1px solid #000';
+
+    popup.appendChild(text);
+    popup.appendChild(input);
+    popup.appendChild(button);
+
+    document.body.appendChild(popup);
+
+    button.addEventListener('click', function() {
+        var newName = input.value;
+        alert('Вы ввели имя: ' + newName);
+        document.body.removeChild(popup);
+    });
+}
+</script>
+<script src="https://kit.fontawesome.com/b99e675b6e.js"></script>
+<link href="./static/profile.css" rel="stylesheet">
+<body>
+<div class="user_info">
+    <div class="greeting">
+        <h1>{{greeting}} {{username}}!</h1>
+    </div>
+    <div class="points">
+        <h2>Счёт: {{points}}</h2>
+    </div>
+    <div class="email">
+        <h2>E-mail: {{email}}</h2>
+    </div>
+</div>
+<div class="other">
+    <div class="change_name">
+        <a class="button" href="/change_data">Сменить имя</a>
+    </div>
+    <div class="pass_tasks">
+        <a class="button_pt" href="/">Пропущенные примеры</a>
+    </div>
+</div>
+<div>
+    <img src="static/{{filename}}"></img>
+</div>
+
+</body>
+{% endblock %}
