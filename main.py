@@ -141,11 +141,20 @@ def profile():
 def top():
     db_sess = db_session.create_session()
     users_of_top = db_sess.query(User).all()
+    # if len(users_of_top) >= 10:
+    #     users_of_top_10 = sorted(users_of_top, key=lambda x: x.count_points, reverse=True)[:10]
+    # else:
+    #     users_of_top_10 = sorted(users_of_top, key=lambda x: x.count_points, reverse=True)
     users_of_top_10 = sorted(users_of_top, key=lambda x: x.count_points, reverse=True)[:10]
     dict_of_top10_user = dict()
-    for i in range(len(users_of_top_10)):
-        dict_of_top10_user[i + 1] = {"name": users_of_top_10[i].username,
-                                     "countpoints": users_of_top_10[i].count_points}
+    for i in range(10):
+        if i < len(users_of_top_10) - 1:
+            dict_of_top10_user[i + 1] = {"name": users_of_top_10[i].username,
+                                         "countpoints": users_of_top_10[i].count_points}
+        else:
+            dict_of_top10_user[i+1] = {"name": None,
+                                         "countpoints":None}
+    print(dict_of_top10_user)
     return render_template("raiting.html", top_users=dict_of_top10_user)
 
 
