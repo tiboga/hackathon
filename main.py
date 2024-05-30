@@ -4,14 +4,14 @@ import flask
 import requests
 from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_login import LoginManager, current_user, login_required, logout_user, login_user
-from flask_restful import Api
 from forms.users import LoginForm, RegisterForm
-from data import db_session
+from data import db_session, api
 from data.users import User
 import datetime
 from data.achievement_of_user import AchievementOfUser
 import datetime
 from profile_graphs import generate_progress_charts
+from data.achievement_of_user import AchievementOfUser
 
 app = Flask(__name__)
 
@@ -19,12 +19,6 @@ app.config['SECRET_KEY'] = 'flask_project_secret_key'
 login_manager = LoginManager(app)
 login_manager.login_message = "Авторизация успешно выполнена"
 login_manager.init_app(app)
-api = Api(app)
-blueprint = flask.Blueprint(
-    'API_BD',
-    __name__,
-    template_folder='templates'
-)
 
 
 @login_manager.user_loader
@@ -113,6 +107,7 @@ def registration():
 
 @app.route("/profile")
 def profile():
+
     if current_user.is_authenticated:
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.id == current_user.id).first()
@@ -154,11 +149,13 @@ def top():
     return render_template("raiting.html", top_users=dict_of_top10_user)
 
 
+
 @app.route("/logout")
 @login_required
 def logout():
     logout_user()
     return redirect("/")
+
 
 
 @app.route('/change_data')
@@ -180,11 +177,9 @@ def change_data():
 
 
 # Api
-
-
 def main():
     db_session.global_init("db/main.db")
-    # app.register_blueprint(API_BD.blueprint)
+    app.register_blueprint(api.blueprint)
     app.run("127.0.0.1", port=5000)
 
 

@@ -16,7 +16,7 @@ class User(SqlAlchemyBase, UserMixin):
     date_of_make = sqlalchemy.Column(sqlalchemy.DateTime,
                                      default=datetime.datetime.now, nullable=True)
     password = sqlalchemy.Column(sqlalchemy.Text, nullable=True)
-    count_points = sqlalchemy.Column(sqlalchemy.Integer, nullable=False)
+    count_points = sqlalchemy.Column(sqlalchemy.Integer, nullable=False, default=0)
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
