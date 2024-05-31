@@ -17,17 +17,16 @@ login_manager.login_message = "Авторизация успешно выпол�
 login_manager.init_app(app)
 CURRENT_TASK = dict()
 
+
 @login_manager.user_loader
 def load_user(user_id):
     db_sess = db_session.create_session()
-    # print(db_sess.query(User).filter(User.id==user_id).first())
-    return db_sess.query(User).filter(User.id==user_id).first()
+    return db_sess.query(User).filter(User.id == user_id).first()
 
 
 # Клиентская часть
 @app.route("/", methods=['GET', 'POST'])
 def main_page():
-
     levels = ['easy', 'medium', 'hard']
     action = ['addition', 'subtraction', 'multiplication', 'division', 'equality', 'quadratic']
     a = generate_example(levels[random.randint(0, 2)], action[random.randint(0, 5)])
@@ -112,6 +111,7 @@ def registration():
     return render_template("register_page.html", title="Регистрация", form=form)'''
 
 
+@login_required
 @app.route("/profile")
 def profile():
     if current_user.is_authenticated:
@@ -159,7 +159,7 @@ def top():
                                          "countpoints": users_of_top_10[i].count_points}
         else:
             dict_of_top10_user[i + 1] = {"name": None,
-                                         "countpoints": None}
+                                         "countpoints": 0}
     print(dict_of_top10_user)
     return render_template("raiting.html", top_users=dict_of_top10_user)
 
@@ -171,7 +171,8 @@ def logout():
     return redirect("/")
 
 
-@app.route('/change_data', methods=["GET","POST"])
+@login_required
+@app.route('/change_data', methods=["GET", "POST"])
 def change_data():
     if current_user.is_authenticated:
         if request.method == 'POST':
@@ -188,7 +189,12 @@ def change_data():
         flash('Вы ещё не вошли в аккаунт!', 'danger')
         return redirect('/')
 
-
+@login_required
+@app.route('/missingexamples')
+def missing_examples():
+    db_sess = db_session.create_session()
+    examples = [{'task': elem.task, 'user_answer':elem.user_answer, 'resolved': elem.resolved}for elem in  db_sess.query(TaskOfUsers).filter(TaskOfUsers.user_id==current_user.id, TaskOfUsers.resolved==0)]
+    return examples
 # Api
 def main():
     db_session.global_init("db/main.db")
