@@ -130,11 +130,24 @@ def profile():
             greeting = 'Добрый вечер,'
         else:
             greeting = 'Доброй ночи,'
+        dates = [str(datetime.datetime.now().date() - datetime.timedelta(days=i)) for i in range(5)]
+        dates.reverse()
+        print(dates)
+        db_sess = db_session.create_session()
+        correct = [len(db_sess.query(TaskOfUsers).filter(
+            TaskOfUsers.user_id==current_user.id,
+            TaskOfUsers.date==elem,
+            TaskOfUsers.resolved==1).all()) for elem in dates]
+        incorrect = [len(db_sess.query(TaskOfUsers).filter(
+            TaskOfUsers.user_id==current_user.id,
+            TaskOfUsers.date==elem,
+            TaskOfUsers.resolved==0).all()) for elem in dates]
         user_data = {
-            'dates': ['2024-05-01', '2024-05-02', '2024-05-03', '2024-05-04', '2024-05-05'],
-            'correct': [10, 15, 20, 25, 30],
-            'incorrect': [2, 1, 3, 2, 1]
+            'dates': dates,
+            'correct': correct,
+            'incorrect':incorrect
         }
+
         filename = generate_progress_charts(user_data, correct_color='green', incorrect_color='orange',
                                             filename='graph.png')
         return render_template("profile.html", username=username, email=mail, points=count_points, greeting=greeting,
@@ -171,7 +184,6 @@ def logout():
     return redirect("/")
 
 
-@login_required
 @app.route('/change_data', methods=["GET", "POST"])
 def change_data():
     if current_user.is_authenticated:
@@ -184,6 +196,11 @@ def change_data():
                 old_user = db_sess.query(User).filter(User.id == current_user.id).first()
                 old_user.username = newname
                 db_sess.commit()
+                flash("Океоке", 'success')
+                return redirect('/profile')
+            else:
+                flash("Неокенеоке", 'danger')
+                return redirect('/change_data')
         return render_template('change_data.html', title='Смена данных')
     else:
         flash('Вы ещё не вошли в аккаунт!', 'danger')
