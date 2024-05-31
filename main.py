@@ -4,14 +4,14 @@ import flask
 import requests
 from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_login import LoginManager, current_user, login_required, logout_user, login_user
+from flask_restful import Api
 from forms.users import LoginForm, RegisterForm
-from data import db_session, api
+from data import db_session
 from data.users import User
 import datetime
 from data.achievement_of_user import AchievementOfUser
 import datetime
 from profile_graphs import generate_progress_charts
-from data.achievement_of_user import AchievementOfUser
 
 app = Flask(__name__)
 
@@ -19,6 +19,12 @@ app.config['SECRET_KEY'] = 'flask_project_secret_key'
 login_manager = LoginManager(app)
 login_manager.login_message = "Авторизация успешно выполнена"
 login_manager.init_app(app)
+api = Api(app)
+blueprint = flask.Blueprint(
+    'API_BD',
+    __name__,
+    template_folder='templates'
+)
 
 
 @login_manager.user_loader
@@ -107,7 +113,6 @@ def registration():
 
 @app.route("/profile")
 def profile():
-
     if current_user.is_authenticated:
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.id == current_user.id).first()
@@ -126,8 +131,8 @@ def profile():
             greeting = 'Доброй ночи,'
         user_data = {
             'dates': ['2024-05-01', '2024-05-02', '2024-05-03', '2024-05-04', '2024-05-05'],
-            'correct': [10, 15, 20, 25, 30],
-            'incorrect': [2, 1, 3, 2, 1]
+            'correct': [0, 0, 0, 0, 30],
+            'incorrect': [0, 0, 0, 0, 1]
         }
         filename = generate_progress_charts(user_data, correct_color='green', incorrect_color='orange',
                                             filename='graph.png')
@@ -141,21 +146,27 @@ def profile():
 def top():
     db_sess = db_session.create_session()
     users_of_top = db_sess.query(User).all()
+    # if len(users_of_top) >= 10:
+    #     users_of_top_10 = sorted(users_of_top, key=lambda x: x.count_points, reverse=True)[:10]
+    # else:
+    #     users_of_top_10 = sorted(users_of_top, key=lambda x: x.count_points, reverse=True)
     users_of_top_10 = sorted(users_of_top, key=lambda x: x.count_points, reverse=True)[:10]
     dict_of_top10_user = dict()
-    for i in range(len(users_of_top_10)):
-        dict_of_top10_user[i + 1] = {"name": users_of_top_10[i].username,
-                                     "countpoints": users_of_top_10[i].count_points}
+    for i in range(10):
+        if i < len(users_of_top_10) - 1:
+            dict_of_top10_user[i + 1] = {"name": users_of_top_10[i].username,
+                                         "countpoints": users_of_top_10[i].count_points}
+        else:
+            dict_of_top10_user[i+1] = {"name": None,
+                                         "countpoints":0}
+    print(dict_of_top10_user)
     return render_template("raiting.html", top_users=dict_of_top10_user)
-
-
 
 @app.route("/logout")
 @login_required
 def logout():
     logout_user()
     return redirect("/")
-
 
 
 @app.route('/change_data')
@@ -177,9 +188,11 @@ def change_data():
 
 
 # Api
+
+
 def main():
     db_session.global_init("db/main.db")
-    app.register_blueprint(api.blueprint)
+    # app.register_blueprint(API_BD.blueprint)
     app.run("127.0.0.1", port=5000)
 
 
