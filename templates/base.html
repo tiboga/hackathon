@@ -18,25 +18,18 @@
 <header>
     <nav class="navbar navbar-light bg-light">
         <div class="container-fluid">
-            <h1>Математический Генератор</h1>
+            <a class="navbar-brand" href="/">MathGenerator</a>
             {% if current_user.is_authenticated %}
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                        Действие
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                        <li><a class="dropdown-item" href="profile">Профиль</a></li>
-                        <li><a class="dropdown-item" href="top">Рейтинг</a></li>
-                        <li><a class="dropdown-item" href="logout">Выйти</a></li>
-                    </ul>
-                </div>
+            <div>
+            <a class="btn btn-outline-success" href="/profile">Профиль</a>
+            <a class="btn btn-outline-danger" href="/logout">Выйти</a>
+            </div>
             {% else %}
                 <div>
-                    <a class="btn btn-primary" href="/top">Рейтинг</a>
-                    <a class="btn btn-success" href="/login">Войти</a>
+                    <a class="btn btn-outline-primary" href="/top">Рейтинг</a>
+                    <a class="btn btn-outline-success" href="/login">Войти</a>
                 </div>
             {% endif %}
-            <a class="navbar-brand" href="/">MathGenerator</a>
         </div>
     </nav>
 </header>

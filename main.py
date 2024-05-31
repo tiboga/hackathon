@@ -1,9 +1,14 @@
 import random
 from generation import generate_example
+import flask
+import requests
 from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_login import LoginManager, current_user, login_required, logout_user, login_user
+from forms.users import LoginForm, RegisterForm
 from data import db_session, api
 from data.users import User
+import datetime
+from data.achievement_of_user import AchievementOfUser
 import datetime
 from profile_graphs import generate_progress_charts
 from data.achievement_of_user import AchievementOfUser
@@ -15,7 +20,6 @@ app.config['SECRET_KEY'] = 'flask_project_secret_key'
 login_manager = LoginManager(app)
 login_manager.login_message = "Авторизация успешно выполнена"
 login_manager.init_app(app)
-CURRENT_TASK = dict()
 
 
 @login_manager.user_loader
@@ -111,7 +115,6 @@ def registration():
     return render_template("register_page.html", title="Регистрация", form=form)'''
 
 
-@login_required
 @app.route("/profile")
 def profile():
     if current_user.is_authenticated:
@@ -147,7 +150,6 @@ def profile():
             'correct': correct,
             'incorrect':incorrect
         }
-
         filename = generate_progress_charts(user_data, correct_color='green', incorrect_color='orange',
                                             filename='graph.png')
         return render_template("profile.html", username=username, email=mail, points=count_points, greeting=greeting,
@@ -160,10 +162,6 @@ def profile():
 def top():
     db_sess = db_session.create_session()
     users_of_top = db_sess.query(User).all()
-    # if len(users_of_top) >= 10:
-    #     users_of_top_10 = sorted(users_of_top, key=lambda x: x.count_points, reverse=True)[:10]
-    # else:
-    #     users_of_top_10 = sorted(users_of_top, key=lambda x: x.count_points, reverse=True)
     users_of_top_10 = sorted(users_of_top, key=lambda x: x.count_points, reverse=True)[:10]
     dict_of_top10_user = dict()
     for i in range(10):
