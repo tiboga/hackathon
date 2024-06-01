@@ -135,17 +135,17 @@ def profile():
         print(dates)
         db_sess = db_session.create_session()
         correct = [len(db_sess.query(TaskOfUsers).filter(
-            TaskOfUsers.user_id==current_user.id,
-            TaskOfUsers.date==elem,
-            TaskOfUsers.resolved==1).all()) for elem in dates]
+            TaskOfUsers.user_id == current_user.id,
+            TaskOfUsers.date == elem,
+            TaskOfUsers.resolved == 1).all()) for elem in dates]
         incorrect = [len(db_sess.query(TaskOfUsers).filter(
-            TaskOfUsers.user_id==current_user.id,
-            TaskOfUsers.date==elem,
-            TaskOfUsers.resolved==0).all()) for elem in dates]
+            TaskOfUsers.user_id == current_user.id,
+            TaskOfUsers.date == elem,
+            TaskOfUsers.resolved == 0).all()) for elem in dates]
         user_data = {
             'dates': dates,
             'correct': correct,
-            'incorrect':incorrect
+            'incorrect': incorrect
         }
 
         filename = generate_progress_charts(user_data, correct_color='green', incorrect_color='orange',
@@ -189,29 +189,32 @@ def change_data():
     if current_user.is_authenticated:
         if request.method == 'POST':
             newname = request.form['nickname']
-            password = request.form['password']
             db_sess = db_session.create_session()
             usernames_in_bd = db_sess.query(User).filter(User.username == newname).first()
             if not usernames_in_bd and len(newname) < 22:
                 old_user = db_sess.query(User).filter(User.id == current_user.id).first()
                 old_user.username = newname
                 db_sess.commit()
-                flash("Океоке", 'success')
+                flash("Ваш никнейм успешно изменён!", 'success')
                 return redirect('/profile')
             else:
-                flash("Неокенеоке", 'danger')
+                flash("Вы не можете поставить такой никнейм!", 'danger')
                 return redirect('/change_data')
         return render_template('change_data.html', title='Смена данных')
     else:
         flash('Вы ещё не вошли в аккаунт!', 'danger')
         return redirect('/')
 
+
 @login_required
 @app.route('/missingexamples')
 def missing_examples():
     db_sess = db_session.create_session()
-    examples = [{'task': elem.task, 'user_answer':elem.user_answer, 'resolved': elem.resolved}for elem in  db_sess.query(TaskOfUsers).filter(TaskOfUsers.user_id==current_user.id, TaskOfUsers.resolved==0)]
+    examples = [{'task': elem.task, 'user_answer': elem.user_answer, 'resolved': elem.resolved} for elem in
+                db_sess.query(TaskOfUsers).filter(TaskOfUsers.user_id == current_user.id, TaskOfUsers.resolved == 0)]
     return examples
+
+
 # Api
 def main():
     db_session.global_init("db/main.db")
