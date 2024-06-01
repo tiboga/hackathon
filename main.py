@@ -45,7 +45,7 @@ def main_page():
         db_sess.add(task)
         db_sess.commit()
     if request.method == 'POST':
-        answer = request.form['answer']
+        db_sess = db_session.create_session()
     return render_template("main_page.html", a=a)
 
 
@@ -162,10 +162,11 @@ def profile():
 def top():
     db_sess = db_session.create_session()
     users_of_top = db_sess.query(User).all()
+    print(users_of_top)
     users_of_top_10 = sorted(users_of_top, key=lambda x: x.count_points, reverse=True)[:10]
     dict_of_top10_user = dict()
     for i in range(10):
-        if i < len(users_of_top_10) - 1:
+        if i < len(users_of_top_10):
             dict_of_top10_user[i + 1] = {"name": users_of_top_10[i].username,
                                          "countpoints": users_of_top_10[i].count_points}
         else:
