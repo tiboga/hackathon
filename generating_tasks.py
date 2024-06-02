@@ -82,7 +82,8 @@ def generate_example(level='easy', example_type='addition'):
         elif operator == '>=':
             answer = f"x >= {result}"
     else:
-        raise ValueError("Invalid example type provided.")
+
+        raise ValueError(f"Invalid example type provided:{example_type}")
 
     return example, answer
 

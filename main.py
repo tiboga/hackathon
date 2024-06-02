@@ -1,6 +1,7 @@
+import os.path
 import random
 from generation import generate_example
-from flask import Flask, render_template, redirect, url_for, flash, request
+from flask import Flask, render_template, redirect, flash, request, make_response
 from flask_login import LoginManager, current_user, login_required, logout_user, login_user
 from data import db_session, api
 from data.users import User
@@ -15,7 +16,6 @@ app.config['SECRET_KEY'] = 'flask_project_secret_key'
 login_manager = LoginManager(app)
 login_manager.login_message = "Авторизация успешно выполнена"
 login_manager.init_app(app)
-CURRENT_TASK = dict()
 
 
 @login_manager.user_loader
@@ -27,22 +27,98 @@ def load_user(user_id):
 # Клиентская часть
 @app.route("/", methods=['GET', 'POST'])
 def main_page():
+
     levels = ['easy', 'medium', 'hard']
     action = ['addition', 'subtraction', 'multiplication', 'division', 'equality', 'quadratic']
-    a = generate_example(levels[random.randint(0, 2)], action[random.randint(0, 5)])
-    if current_user.is_authenticated:
-        db_sess = db_session.create_session()
-        task = TaskOfUsers()
-        task.user_answer = ''
-        task.right_answer = a[1]
-        task.task = a[0]
-        task.resolved = 0
-        task.user_id = current_user.id
-        db_sess.add(task)
-        db_sess.commit()
     if request.method == 'POST':
-        answer = request.form['answer']
-    return render_template("main_page.html", a=a)
+        if current_user.is_authenticated:
+            db_sess = db_session.create_session()
+            task = db_sess.query(TaskOfUsers).filter(TaskOfUsers.id == current_user.current_task).first()
+            task.user_answer = request.form['answer']
+            db_sess.commit()
+            if task.user_answer == task.right_answer:
+                task.resolved = 1
+                user = db_sess.query(User).filter(User.id == current_user.id).first()
+                user.count_points += task.adding_points
+                user.need_to_update_task = 1
+                db_sess.commit()
+                flash("Пример решен правильно", 'success')
+
+            else:
+                flash("Пример решен неправильно", 'danger')
+            db_sess.commit()
+            return redirect('/')
+            # return render_template("main_page.html", a=a)
+        else:
+            if request.form['answer'] == request.cookies.get('right_answer'):
+                flash('Пример решен правильно', 'success')
+                return redirect('/')
+            else:
+                flash('Пример решен не правильно', 'danger')
+                return render_template('main_page.html'
+                                       , a=(request.cookies.get('task'),
+                                            request.cookies.get('right_answer')
+                                            ), missing=False)
+
+    if request.method == 'GET':
+
+        points_of_level = {'easy': 1,
+                           'medium': 2,
+                           'hard': 3}
+        db_sess = db_session.create_session()
+        if current_user.is_authenticated:
+            flag = request.cookies.get('for_missing')
+            if flag == "False":
+                level = current_user.level_task
+                type = current_user.type_task if current_user.type_task not in ['numerical', 'equality'] else current_user.type_type_task
+                a = generate_example(level=level, example_type=type)
+                if current_user.need_to_update_task == 1:
+                    task = TaskOfUsers()
+                    task.user_answer = ''
+                    task.right_answer = a[1]
+                    task.task = a[0]
+                    task.resolved = 0
+                    task.user_id = current_user.id
+                    task.adding_points = points_of_level[level] + 1
+                    db_sess.add(task)
+                    db_sess.commit()
+                    user = db_sess.query(User).filter(User.id == current_user.id).first()
+                    user.current_task = max(elem.id for elem in db_sess.query(TaskOfUsers).all())
+                    user.need_to_update_task = 0
+                    db_sess.commit()
+                    return render_template("main_page.html", a=a)
+                else:
+                    current_task = db_sess.query(TaskOfUsers).filter(TaskOfUsers.id==current_user.current_task).first()
+                    return render_template('main_page.html', a=(current_task.task, current_task.right_answer), missing=False)
+                # else:
+                #     task = TaskOfUsers()
+                #     task.user_answer = ''
+                #     task.right_answer = a[1]
+                #     task.task = a[0]
+                #     task.resolved = 0
+                #     task.user_id = current_user.id
+                #     task.adding_points = points_of_level[level] + 1
+                #     db_sess.add(task)
+                #     db_sess.commit()
+                #     user = db_sess.query(User).filter(User.id == current_user.id).first()
+                #     user.current_task = max(elem.id for elem in db_sess.query(TaskOfUsers).all())
+                #     db_sess.commit()
+                #     return render_template("main_page.html", a=a)
+            else:
+                task = db_sess.query(TaskOfUsers).filter(TaskOfUsers.user_id==current_user.id, TaskOfUsers.resolved==0).first()
+                if task:
+                    user = db_sess.query(User).filter(User.id==current_user.id).first()
+                    user.current_task = task.id
+                    db_sess.commit()
+                    return render_template('main_page.html',a=(task.task, task.right_answer), missing=True)
+                return render_template("main_page.html", a=None, missing=True)
+        else:
+            level = random.randint(0, 2)
+            a = generate_example(levels[level], action[random.randint(0, 5)])
+            res = make_response(render_template('main_page.html', a=a, missing=False))
+            res.set_cookie('right_answer', a[1], max_age=60 * 60 * 24 * 365 * 2)
+            res.set_cookie('task', a[0], max_age=60 * 60 * 24 * 365 * 2)
+            return res
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -95,23 +171,8 @@ def registration():
     return render_template('register_page.html', title='Регистрация')
 
 
-'''    form = RegisterForm()
-    if form.validate_on_submit():
-        db_sess = db_session.create_session()
-        usernames_in_bd = db_sess.query(User).filter(User.username == form.username.data).first()
-        logins_in_bd = db_sess.query(User).filter(User.login == form.login.data).first()
-        if form.password.data == form.repeat_password.data and not usernames_in_bd and not logins_in_bd:
-            user = User(login=form.login.data, username=form.username.data, count_points=0)
-            user.set_password(form.password.data)
-            db_sess.add(user)
-            db_sess.commit()
-            return redirect('/')
-        else:
-            pass
-    return render_template("register_page.html", title="Регистрация", form=form)'''
 
 
-@login_required
 @app.route("/profile")
 def profile():
     if current_user.is_authenticated:
@@ -147,7 +208,6 @@ def profile():
             'correct': correct,
             'incorrect': incorrect
         }
-
         filename = generate_progress_charts(user_data, correct_color='green', incorrect_color='orange',
                                             filename='graph.png')
         return render_template("profile.html", username=username, email=mail, points=count_points, greeting=greeting,
@@ -160,20 +220,15 @@ def profile():
 def top():
     db_sess = db_session.create_session()
     users_of_top = db_sess.query(User).all()
-    # if len(users_of_top) >= 10:
-    #     users_of_top_10 = sorted(users_of_top, key=lambda x: x.count_points, reverse=True)[:10]
-    # else:
-    #     users_of_top_10 = sorted(users_of_top, key=lambda x: x.count_points, reverse=True)
     users_of_top_10 = sorted(users_of_top, key=lambda x: x.count_points, reverse=True)[:10]
     dict_of_top10_user = dict()
     for i in range(10):
-        if i < len(users_of_top_10) - 1:
+        if i < len(users_of_top_10):
             dict_of_top10_user[i + 1] = {"name": users_of_top_10[i].username,
                                          "countpoints": users_of_top_10[i].count_points}
         else:
             dict_of_top10_user[i + 1] = {"name": None,
                                          "countpoints": 0}
-    print(dict_of_top10_user)
     return render_template("raiting.html", top_users=dict_of_top10_user)
 
 
@@ -189,16 +244,21 @@ def change_data():
     if current_user.is_authenticated:
         if request.method == 'POST':
             newname = request.form['nickname']
+            password = request.form['password']
             db_sess = db_session.create_session()
+            user = db_sess.query(User).filter(User.id == current_user.id).first()
+            if user.check_password(password):
+                flash("Неправильный пароль", 'danger')
+                return redirect('/change_data')
             usernames_in_bd = db_sess.query(User).filter(User.username == newname).first()
             if not usernames_in_bd and len(newname) < 22:
                 old_user = db_sess.query(User).filter(User.id == current_user.id).first()
                 old_user.username = newname
                 db_sess.commit()
-                flash("Ваш никнейм успешно изменён!", 'success')
+                flash("Никнейм поменян", 'success')
                 return redirect('/profile')
             else:
-                flash("Вы не можете поставить такой никнейм!", 'danger')
+                flash("Никнейм уже использован или его длина больше длины 22 символа", 'danger')
                 return redirect('/change_data')
         return render_template('change_data.html', title='Смена данных')
     else:
@@ -210,13 +270,80 @@ def change_data():
 @app.route('/missingexamples')
 def missing_examples():
     db_sess = db_session.create_session()
-    examples = [{'task': elem.task, 'user_answer': elem.user_answer, 'resolved': elem.resolved} for elem in
+    examples = [{'task': elem.task, 'user_answer': elem.user_answer, 'id': elem.id} for elem in
                 db_sess.query(TaskOfUsers).filter(TaskOfUsers.user_id == current_user.id, TaskOfUsers.resolved == 0)]
-    return examples
+    return render_template('missing_examples.html', examples=examples)
 
 
-# Api
+@login_required
+@app.route("/changecurrenttask/<task_id>")
+def change_current_task(task_id):
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).filter(User.id == current_user.id).first()
+    user.current_task = task_id
+    user.need_to_update_task = 0
+    db_sess.commit()
+    res = make_response(redirect('/'))
+    res.set_cookie('for_missing', "True")
+    return res
+
+
+
+@login_required
+@app.route("/setlevel/<level>")
+def set_level(level):
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).filter(User.id == current_user.id).first()
+    user.level_task = level
+    user.need_to_update_task = 1
+    db_sess.commit()
+    return redirect("/")
+
+
+@login_required
+@app.route("/type/<type>")
+def set_type(type):
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).filter(User.id == current_user.id).first()
+    user.type_task = type
+    if type == 'numerical':
+        user.type_type_task = 'addition'
+    if type == 'equality':
+        user.type_type_task = 'equality'
+    user.need_to_update_task = 1
+    db_sess.commit()
+    return redirect('/')
+
+
+@login_required
+@app.route("/typetypetask/<type>")
+def set_type_of_type(type):
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).filter(User.id == current_user.id).first()
+    user.type_type_task = type
+    user.need_to_update_task = 1
+    db_sess.commit()
+    return redirect('/')
+
+@login_required
+@app.route('/outofmissings')
+def out_of_missings():
+    res = make_response(redirect('/'))
+    res.set_cookie('for_missing','False')
+    return res
+@login_required
+@app.route('/skip')
+def skip():
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).filter(User.id==current_user.id).first()
+    user.need_to_update_task = 1
+    print('skip')
+    db_sess.commit()
+
+    return redirect('/')
 def main():
+    if not os.path.exists('db'):
+        os.mkdir('db')
     db_session.global_init("db/main.db")
     app.register_blueprint(api.blueprint)
     app.run("127.0.0.1", port=5000)

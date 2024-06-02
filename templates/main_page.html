@@ -62,16 +62,72 @@ input{
 .dropdown:hover .dropdown-content {
     display: block;
 }
+
 </style>
+{%if current_user.is_authenticated%}
+<div class="dropdown">
+  <button class="btn btn-secondary dropdown-toggle" type="button" id="level" data-bs-toggle="dropdown" aria-expanded="false">
+    Уровень сложности
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+    <li><a class="dropdown-item" href="/setlevel/easy">Легкий</a></li>
+    <li><a class="dropdown-item" href="/setlevel/medium">Средний</a></li>
+    <li><a class="dropdown-item" href="/setlevel/hard">Сложный</a></li>
+  </ul>
+</div>
+<div class="dropdown">
+  <button class="btn btn-secondary dropdown-toggle" type="button" id="type" data-bs-toggle="dropdown" aria-expanded="false">
+    Тип знака между частями примера
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+    <li><a class="dropdown-item" href="/type/equality">Равенство</a></li>
+    <li><a class="dropdown-item" href="/type/x_inequality">Неравенство</a></li>
+    <li><a class="dropdown-item" href="/type/numerical">Числовой пример</a></li>
+  </ul>
+</div>
+{% if current_user.type_task == 'numerical'%}
+<div class="dropdown">
+  <button class="btn btn-secondary dropdown-toggle" type="button" id="numericalexample" data-bs-toggle="dropdown" aria-expanded="false">
+    Тип примера
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+    <li><a class="dropdown-item" href="/typetypetask/addition">Сложение</a></li>
+    <li><a class="dropdown-item" href="/typetypetask/subtraction">Вычитание</a></li>
+    <li><a class="dropdown-item" href="/typetypetask/division">Деление</a></li>
+    <li><a class="dropdown-item" href="/typetypetask/multiplication">Умножение</a></li>
+  </ul>
+</div>
+{%elif current_user.type_task == 'equality'%}
+<div class="dropdown">
+  <button class="btn btn-secondary dropdown-toggle" type="button" id="xexample" data-bs-toggle="dropdown" aria-expanded="false">
+    Тип примера
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+    <li><a class="dropdown-item" href="/typetypetask/quadratic">Квадратное</a></li>
+    <li><a class="dropdown-item" href="/typetypetask/equality">Неквадратное</a></li>
+  </ul>
+</div>
+{%endif%}
+{%endif%}
+{%if missing%}
+<h4>Вы находитесь в режиме решения пропущенных заданий</h4>
+<a href='/outofmissings' type="submit" class="btn btn-primary">Выйти из этого режима</a>
+{%endif%}
+{%if a%}
+
 <form method="post" action="/">
     <h3>{{a[0]}}</h3>
     <label class="form-label">
         <input type="text" name="answer" placeholder="Ответ">
     </label>
-    {% if current_user.is_authenticated %}
-    <button type="submit" class="btn btn-primary">Пропустить</button>
-    {% endif %}
+
     <button type="submit" class="btn btn-primary">Проверить</button>
 </form>
+{%else%}
+<h4>Вы решили все пропущенные примеры</h4>
+{%endif%}
 
+    <a href='/skip' type="submit" class="btn btn-primary">Пропустить</a>
 {% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
