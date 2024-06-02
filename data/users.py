@@ -18,10 +18,10 @@ class User(SqlAlchemyBase, UserMixin):
     password = sqlalchemy.Column(sqlalchemy.Text, nullable=True)
     count_points = sqlalchemy.Column(sqlalchemy.Integer, nullable=False, default=0)
     current_task = sqlalchemy.Column(sqlalchemy.Integer, default=0)
-    level_type = sqlalchemy.Column(sqlalchemy.Text, default='Easy')
-    type_task = sqlalchemy.Column(sqlalchemy.Text,default='Numerical')
-    numerical_example =sqlalchemy.Column(sqlalchemy.Text, default='additional')
-
+    level_task = sqlalchemy.Column(sqlalchemy.Text, default='easy')
+    type_task = sqlalchemy.Column(sqlalchemy.Text,default='numerical')
+    type_type_task =sqlalchemy.Column(sqlalchemy.Text, default='addition')
+    need_to_update_task = sqlalchemy.Column(sqlalchemy.Integer, default=1)
     def set_password(self, password):
         self.password = generate_password_hash(password)
 
