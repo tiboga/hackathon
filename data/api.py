@@ -43,7 +43,7 @@ def add_user():
 
 @blueprint.route('/api/user/login', methods=["POST"])
 def login():
-    dict_of_data = request.json # login, password
+    dict_of_data = request.json  # login, password
     if not all(key in request.json for key in
                ['login', 'password']):
         return make_response(jsonify(
@@ -58,13 +58,13 @@ def login():
 
 @blueprint.route("/api/task/new", methods=["POST"])
 def new_task():
-    dict_of_data = request.json # level, example_type, user_id
+    dict_of_data = request.json  # level, example_type, user_id
     if dict_of_data['level'] not in ('easy', 'medium', 'hard'):
         return jsonify(
             {"Status": "error", 'description':
                 "level must be one of the values: ['easy', 'medium', 'hard']"})
     if dict_of_data['example_type'] not in (
-    'addition', 'subtraction', 'multiplication', 'division', 'equality', 'quadratic', 'x_inequality'):
+            'addition', 'subtraction', 'multiplication', 'division', 'equality', 'quadratic', 'x_inequality'):
         return jsonify({"Status": "error",
                         'description': "example_type must be one of the values:"
                                        "['addition', 'subtraction', "
@@ -80,17 +80,33 @@ def new_task():
     task_of_user.user_id = dict_of_data['user_id']
     db_sess.add(task_of_user)
     db_sess.commit()
-    return jsonify({"Status": 'ok', 'task': task[0], 'answer': task[1]})
-@blueprint.route('/api/task/change')
-def change_task_answer():
-    dict_of_data = request.json # user_id, task, new_answ
-    try:
-        db_sess = db_session.create_session()
-        task_of_user = db_sess.query(TaskOfUsers).filter(TaskOfUsers.user_id==dict_of_data['user_id'], TaskOfUsers.task==dict_of_data['task']).all()
-        task_of_user.user_answer = dict_of_data['new_answ']
-        if task_of_user.user_answer == task_of_user.right_answer:
-            task_of_user.resolved = 1
-        db_sess.commit()
-        return jsonify({'Status': 'ok'})
-    except:
-        return jsonify({"Status": "error"})
+
+    return jsonify({"Status": 'ok', 'task': task[0], 'true_answer': task[1],
+                    'task_id': max([elem.id for elem in db_sess.query(TaskOfUsers).all()])})
+
+
+@blueprint.route('/api/task/check', methods=["POST"])
+def check_task_answer():
+    dict_of_data = request.json  # new_ans, task_id
+    db_sess = db_session.create_session()
+    task = db_sess.query(TaskOfUsers).filter(TaskOfUsers.id == dict_of_data['task_id']).first()
+    task.user_answer = dict_of_data['new_ans']
+    if task.user_answer == task.right_answer:
+        task.resolved = 1
+    db_sess.commit()
+    return jsonify({'Status': 'ok'})
+#
+# @blueprint.route('/api/task/change', methods=["POST"])
+# def change_task_answer():
+#     dict_of_data = request.json  # user_id, task, new_answ
+#     try:
+#         db_sess = db_session.create_session()
+#         task_of_user = db_sess.query(TaskOfUsers).filter(TaskOfUsers.user_id == dict_of_data['user_id'],
+#                                                          TaskOfUsers.task == dict_of_data['task']).all()
+#         task_of_user.user_answer = dict_of_data['new_answ']
+#         if task_of_user.user_answer == task_of_user.right_answer:
+#             task_of_user.resolved = 1
+#         db_sess.commit()
+#         return jsonify({'Status': 'ok'})
+#     except:
+#         return jsonify({"Status": "error"})
