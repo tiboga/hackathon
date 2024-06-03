@@ -27,7 +27,6 @@ def load_user(user_id):
 # Клиентская часть
 @app.route("/", methods=['GET', 'POST'])
 def main_page():
-
     levels = ['easy', 'medium', 'hard']
     action = ['addition', 'subtraction', 'multiplication', 'division', 'equality', 'quadratic']
     if request.method == 'POST':
@@ -70,7 +69,8 @@ def main_page():
             flag = request.cookies.get('for_missing')
             if flag == "False":
                 level = current_user.level_task
-                type = current_user.type_task if current_user.type_task not in ['numerical', 'equality'] else current_user.type_type_task
+                type = current_user.type_task if current_user.type_task not in ['numerical',
+                                                                                'equality'] else current_user.type_type_task
                 a = generate_example(level=level, example_type=type)
                 if current_user.need_to_update_task == 1:
                     task = TaskOfUsers()
@@ -88,8 +88,10 @@ def main_page():
                     db_sess.commit()
                     return render_template("main_page.html", a=a)
                 else:
-                    current_task = db_sess.query(TaskOfUsers).filter(TaskOfUsers.id==current_user.current_task).first()
-                    return render_template('main_page.html', a=(current_task.task, current_task.right_answer), missing=False)
+                    current_task = db_sess.query(TaskOfUsers).filter(
+                        TaskOfUsers.id == current_user.current_task).first()
+                    return render_template('main_page.html', a=(current_task.task, current_task.right_answer),
+                                           missing=False)
                 # else:
                 #     task = TaskOfUsers()
                 #     task.user_answer = ''
@@ -105,12 +107,13 @@ def main_page():
                 #     db_sess.commit()
                 #     return render_template("main_page.html", a=a)
             else:
-                task = db_sess.query(TaskOfUsers).filter(TaskOfUsers.user_id==current_user.id, TaskOfUsers.resolved==0).first()
+                task = db_sess.query(TaskOfUsers).filter(TaskOfUsers.user_id == current_user.id,
+                                                         TaskOfUsers.resolved == 0).first()
                 if task:
-                    user = db_sess.query(User).filter(User.id==current_user.id).first()
+                    user = db_sess.query(User).filter(User.id == current_user.id).first()
                     user.current_task = task.id
                     db_sess.commit()
-                    return render_template('main_page.html',a=(task.task, task.right_answer), missing=True)
+                    return render_template('main_page.html', a=(task.task, task.right_answer), missing=True)
                 return render_template("main_page.html", a=None, missing=True)
         else:
             level = random.randint(0, 2)
@@ -169,8 +172,6 @@ def registration():
         else:
             pass
     return render_template('register_page.html', title='Регистрация')
-
-
 
 
 @app.route("/profile")
@@ -288,7 +289,6 @@ def change_current_task(task_id):
     return res
 
 
-
 @login_required
 @app.route("/setlevel/<level>")
 def set_level(level):
@@ -325,22 +325,30 @@ def set_type_of_type(type):
     db_sess.commit()
     return redirect('/')
 
+
 @login_required
 @app.route('/outofmissings')
 def out_of_missings():
     res = make_response(redirect('/'))
-    res.set_cookie('for_missing','False')
+    res.set_cookie('for_missing', 'False')
     return res
-@login_required
+
+
 @app.route('/skip')
 def skip():
-    db_sess = db_session.create_session()
-    user = db_sess.query(User).filter(User.id==current_user.id).first()
-    user.need_to_update_task = 1
-    print('skip')
-    db_sess.commit()
+    if current_user.is_authenticated:
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.id == current_user.id).first()
+        user.need_to_update_task = 1
+        print('skip')
+        db_sess.commit()
+    else:
+        flash('Войдите в аккаунт для сохранения пропущенных примеров!', 'danger')
+        return redirect('/')
 
     return redirect('/')
+
+
 def main():
     if not os.path.exists('db'):
         os.mkdir('db')
