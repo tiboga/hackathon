@@ -57,7 +57,10 @@ def generate_example(level='easy', example_type='addition'):
         b = -(r1 + r2)
         c = r1 * r2
         example = f"x²-{-b}x+{c}=0"
-        answer = f"x = {r1}, x = {r2}"
+        if r1 > r2:
+            answer = f"{r1};{r2}"
+        else:
+            answer = f"{r2};{r1}"
     elif example_type == 'x_inequality':
         a = random.randint(1, 10)
         while a == 1:  # Avoid a = 1 to make the example more interesting

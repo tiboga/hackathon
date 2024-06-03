@@ -1,6 +1,6 @@
 import flask
 from flask import jsonify, request, make_response
-import generating_tasks
+import generation
 from data import db_session
 from data.users import User
 from data.tasks_of_users import TaskOfUsers
@@ -70,7 +70,7 @@ def new_task():
                                        "['addition', 'subtraction', "
                                        "'multiplication', 'division', 'equality', 'quadratic', "
                                        "'x_inequality'}"})
-    task = generating_tasks.generate_example(level=dict_of_data['level'], example_type=dict_of_data['example_type'])
+    task = generation.generate_example(level=dict_of_data['level'], example_type=dict_of_data['example_type'])
     db_sess = db_session.create_session()
     task_of_user = TaskOfUsers()
     task_of_user.task = task[0]
