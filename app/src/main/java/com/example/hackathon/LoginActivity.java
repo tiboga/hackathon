@@ -12,12 +12,26 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.material.snackbar.Snackbar;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
 
     Button login_button, skip_btn;
+    private static final String LOGIN_URL = "http://api/user/login";
     EditText editTextEmail, editTextPassword;
     TextView textViewCreate;
     @Override
@@ -32,8 +46,10 @@ public class LoginActivity extends AppCompatActivity {
         login_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                loginUser();
                 snack();
             }
+
         });
         textViewCreate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,5 +97,50 @@ public class LoginActivity extends AppCompatActivity {
                 .setBackgroundTint(getResources().getColor(R.color.green))
                 .setTextColor(Color.WHITE)
                 .show();
+    }
+    private void loginUser() {
+        String login = editTextEmail.getText().toString();
+        String password = editTextPassword.getText().toString();
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, LOGIN_URL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            String status = jsonObject.getString("Status");
+                            boolean loginSuccess = jsonObject.getBoolean("login");
+
+                            if (status.equals("ok") && loginSuccess) {
+                                int userId = jsonObject.getInt("id");
+                                Toast.makeText(LoginActivity.this, "Успешный вход! ID: " + userId, Toast.LENGTH_LONG).show();
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                            } else {
+                                Toast.makeText(LoginActivity.this, "Ошибка! Неправильный логин или пароль", Toast.LENGTH_LONG).show();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(LoginActivity.this, "Ошибка: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("login", login);
+                params.put("password", password);
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
     }
 }

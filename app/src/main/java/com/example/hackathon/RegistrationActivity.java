@@ -11,12 +11,26 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.material.snackbar.Snackbar;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class RegistrationActivity extends AppCompatActivity {
 
     Button backButton, reg_button;
+    private static final String REGISTER_URL = "http://api/user/auth";
     TextView textViewReg;
     EditText editTextEmail, editTextPassword, editTextRepeatPassword, editTextName;
     @Override
@@ -30,11 +44,7 @@ public class RegistrationActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intentLog = new Intent(RegistrationActivity.this, LoginActivity.class);
-                intentLog.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                startActivityForResult(intentLog, 0);
-                overridePendingTransition(0,0);
-                finish();
+                onBackPressed();
             }
         });
 
@@ -53,6 +63,7 @@ public class RegistrationActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 snack();
+                registerUser();
             }
         });
     }
@@ -88,5 +99,57 @@ public class RegistrationActivity extends AppCompatActivity {
                 .setBackgroundTint(getResources().getColor(R.color.green))
                 .setTextColor(Color.WHITE)
                 .show();
+    }
+    private void registerUser() {
+        String login = editTextEmail.getText().toString();
+        String username = editTextName.getText().toString();
+        String password = editTextPassword.getText().toString();
+        String repeatPassword = editTextRepeatPassword.getText().toString();
+
+        if (!password.equals(repeatPassword)) {
+            Toast.makeText(this, "Passwords do not match", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, REGISTER_URL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            String status = jsonObject.getString("Status");
+
+                            if (status.equals("ok")) {
+                                Toast.makeText(RegistrationActivity.this, "Registration successful!", Toast.LENGTH_LONG).show();
+                                Intent intent = new Intent(RegistrationActivity.this, LoginActivity.class);
+                                startActivity(intent);
+                                finish();
+                            } else {
+                                String description = jsonObject.getString("description");
+                                Toast.makeText(RegistrationActivity.this, "Ошибка: " + description, Toast.LENGTH_LONG).show();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(RegistrationActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("login", login);
+                params.put("username", username);
+                params.put("password", password);
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
     }
 }
