@@ -118,7 +118,7 @@ public class LoginActivity extends AppCompatActivity {
                                 startActivity(intent);
                                 finish();
                             } else {
-                                Toast.makeText(LoginActivity.this, "Ошибк! Неправильный логин или пароль", Toast.LENGTH_LONG).show();
+                                Toast.makeText(LoginActivity.this, "Ошибка! Неправильный логин или пароль", Toast.LENGTH_LONG).show();
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
