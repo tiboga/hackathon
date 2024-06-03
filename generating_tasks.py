@@ -57,7 +57,8 @@ def generate_example(level='easy', example_type='addition'):
         b = -(r1 + r2)
         c = r1 * r2
         example = f"x^2 - {-b}x + {c} = 0"
-        answer = f"x = {r1}, x = {r2}"
+        answer = f"{r1};{r2}"
+        print(answer)
     elif example_type == 'x_inequality':
         a = random.randint(1, 10)
         while a == 1:  # Avoid a = 1 to make the example more interesting
@@ -84,7 +85,7 @@ def generate_example(level='easy', example_type='addition'):
     else:
 
         raise ValueError(f"Invalid example type provided:{example_type}")
-
+    print(answer)
     return example, answer
 
 
