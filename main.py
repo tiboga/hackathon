@@ -1,7 +1,7 @@
 import os.path
 import random
 from generation import generate_example
-from flask import Flask, render_template, redirect, flash, request, make_response
+from flask import Flask, render_template, redirect, flash, request, make_response, send_from_directory
 from flask_login import LoginManager, current_user, login_required, logout_user, login_user
 from data import db_session, api
 from data.users import User
@@ -9,6 +9,7 @@ import datetime
 from profile_graphs import generate_progress_charts
 from data.achievement_of_user import AchievementOfUser
 from data.tasks_of_users import TaskOfUsers
+from reward_for_achivments import generate_certificate
 
 app = Flask(__name__)
 
@@ -347,6 +348,27 @@ def skip():
         return redirect('/')
 
     return redirect('/')
+
+
+@app.route('/reward', methods=['GET', 'POST'])
+def reward():
+    if current_user.is_authenticated:
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.id == current_user.id).first()
+        username = user.username
+        count_points = user.count_points
+        if int(count_points) > 50:
+            template_path = "Pinterest_Download (3).jpg"
+            output_path = "certificate.png"
+            name = username
+            generate_certificate(name, template_path, output_path)
+            return send_from_directory(os.path.dirname(output_path), os.path.basename(output_path), as_attachment=True)
+        else:
+            flash('Для получения грамоты необходимо не менее 50 баллов рейтинга!', 'danger')
+    else:
+        flash('Войдите в аккаунт!', 'danger')
+        return redirect('/')
+    return redirect('/profile')
 
 
 def main():
