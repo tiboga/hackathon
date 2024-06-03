@@ -246,18 +246,14 @@ def change_data():
     if current_user.is_authenticated:
         if request.method == 'POST':
             newname = request.form['nickname']
-            password = request.form['password']
             db_sess = db_session.create_session()
             user = db_sess.query(User).filter(User.id == current_user.id).first()
-            if user.check_password(password):
-                flash("Неправильный пароль", 'danger')
-                return redirect('/change_data')
             usernames_in_bd = db_sess.query(User).filter(User.username == newname).first()
             if not usernames_in_bd and len(newname) < 22:
                 old_user = db_sess.query(User).filter(User.id == current_user.id).first()
                 old_user.username = newname
                 db_sess.commit()
-                flash("Никнейм поменян", 'success')
+                flash("'ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤНикнейм изменён!", 'success')
                 return redirect('/profile')
             else:
                 flash("Никнейм уже использован или его длина больше длины 22 символа", 'danger')
@@ -364,7 +360,7 @@ def reward():
             generate_certificate(name, template_path, output_path)
             return send_from_directory(os.path.dirname(output_path), os.path.basename(output_path), as_attachment=True)
         else:
-            flash('Для получения грамоты необходимо не менее 50 баллов рейтинга!', 'danger')
+            flash('ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤДля получения грамоты необходимо не менее 50 баллов рейтинга!', 'danger')
     else:
         flash('Войдите в аккаунт!', 'danger')
         return redirect('/')
