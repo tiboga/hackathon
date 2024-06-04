@@ -33,13 +33,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String JSON_URL = "https://e5ab-176-194-239-186.ngrok-free.app/api/task/new";
+    private static final String JSON_URL = "https://6ba2-176-194-239-186.ngrok-free.app/api/task/new";
     private LinearLayout easyLevel;
     private LinearLayout mediumLevel;
     private LinearLayout hardLevel;
     Button analytics, profile;
     TextView privacy_policy;
-    ListView exam;
+    TextView exam;
     String selectedLevel = "easy";
 
     @Override
@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                                     String string_2 = response.getString("task");
                                     String string_3 = response.getString("true_answer");
                                     String string_4 = response.getString("task_id");
-                                    privacy_policy.setText(string_1 + ";" +string_2 + ";" +string_3 + ";" +string_4);
+                                    exam.setText(string_1 + ";" +string_2 + ";" +string_3 + ";" +string_4);
                                 } catch (JSONException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
                         new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
-                                privacy_policy.setText("ERROR");
+                                exam.setText("ERROR");
                             }
                         }
                 );
