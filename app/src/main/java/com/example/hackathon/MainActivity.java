@@ -1,5 +1,6 @@
 package com.example.hackathon;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -18,6 +19,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -31,7 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String JSON_URL = "/api/task/new";
+    private static final String JSON_URL = "https://e5ab-176-194-239-186.ngrok-free.app/api/task/new";
     private LinearLayout easyLevel;
     private LinearLayout mediumLevel;
     private LinearLayout hardLevel;
@@ -104,27 +106,61 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadJSONFromURL(String url, String level) {
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url + "?level=" + level + "&example_type=type1&user_id=12345",
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            JSONObject object = new JSONObject(EncodingToUTF8(response));
-                            JSONArray jsonArray = object.getJSONArray("exams");
-                            ArrayList<JSONObject> listItems = getArrayListFromJSONArray(jsonArray);
-                            ListAdapter adapter = new ExamAdapter(getApplicationContext(), R.layout.activity_main, R.id.exam, listItems);
-                            exam.setAdapter(adapter);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+        Map<String, String> postParam = new HashMap<String, String>();
+        postParam.put("level", selectedLevel);
+        postParam.put("example_type", "addition");
+        postParam.put("user_id", "1");
+        JsonObjectRequest stringRequest = new JsonObjectRequest
+                (Request.Method.POST, url, new JSONObject(postParam),
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                try {
+                                    String string_1 = response.getString("Status");
+                                    String string_2 = response.getString("task");
+                                    String string_3 = response.getString("true_answer");
+                                    String string_4 = response.getString("task_id");
+                                    privacy_policy.setText(string_1 + ";" +string_2 + ";" +string_3 + ";" +string_4);
+                                } catch (JSONException e) {
+                                    throw new RuntimeException(e);
+                                }
+
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                privacy_policy.setText("ERROR");
+                            }
                         }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                );
+
+//        } {
+//
+//                    @Override
+//                    public void onResponse(String response) {
+//                        try {
+//                            JSONObject object = new JSONObject(EncodingToUTF8(response));
+//                            JSONObject pipipu = object.getJSONObject("pipipu");
+//                            String value = pipipu.getString("value");
+////                            JSONArray jsonArray = object.getJSONArray("value");
+////                            ArrayList<JSONObject> listItems = getArrayListFromJSONArray(jsonArray);
+////                            ListAdapter adapter = new ExamAdapter(getApplicationContext(), R.layout.activity_main, R.id.exam, listItems);
+////                            exam.setAdapter(adapter);
+//                            privacy_policy.setText(value);
+//
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                },
+//                new Response.ErrorListener() {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+//                    }
+
+
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
     }
