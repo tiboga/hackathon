@@ -28,8 +28,8 @@
     <string name="easy">Легкий</string>
     <string name="medium">Средний</string>
     <string name="hard">Сложный</string>
-
-
-
+    <string name="type">Тип знака между частями примера</string>
+    <string name="typeExam">Тип примера</string>
+    <string name="select">Выберите тип</string>
 
 </resources>

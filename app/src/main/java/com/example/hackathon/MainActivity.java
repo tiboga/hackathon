@@ -4,10 +4,14 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +46,23 @@ public class MainActivity extends AppCompatActivity {
     TextView exam;
     String selectedLevel = "easy";
 
+    RelativeLayout layoutTypeEquality, layoutTypeNumericalEx;
+
+    // Тип знака между частями примера
+    String[] itemType = {"Равенство", "Неравенство", "Числовой пример"};
+    AutoCompleteTextView autoCompleteText;
+    ArrayAdapter<String> adapterTypes;
+
+    // Тип примера если выбрано равенство
+    String[] itemTypeEquality = {"Квадратное", "Неквадратное",};
+    AutoCompleteTextView autoCompleteTextEquality;
+    ArrayAdapter<String> adapterTypesEquality;
+
+    // Тип примера если выбран числовой пример
+    String[] itemTypeNumericalEx = {"Сложение", "Вычитание", "Деление", "Умножение"};
+    AutoCompleteTextView autoCompleteTextNumericalEx;
+    ArrayAdapter<String> adapterTypesNumericalEx;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +76,99 @@ public class MainActivity extends AppCompatActivity {
         mediumLevel = findViewById(R.id.mediumLevel);
         hardLevel = findViewById(R.id.hardLevel);
         privacy_policy = findViewById(R.id.privacy_policy);
+
+        layoutTypeEquality = findViewById(R.id.layoutTypeEquality);
+        layoutTypeNumericalEx = findViewById(R.id.layoutTypeNumericalEx);
+
+        layoutTypeEquality.setVisibility(View.GONE);
+        layoutTypeNumericalEx.setVisibility(View.GONE);
+
+        autoCompleteText = findViewById(R.id.autoCompleteText);
+        adapterTypes = new ArrayAdapter<String>(this, R.layout.list_item_types, itemType);
+        autoCompleteText.setAdapter(adapterTypes);
+
+        autoCompleteTextEquality = findViewById(R.id.autoCompleteTextEquality);
+        adapterTypesEquality = new ArrayAdapter<String>(this, R.layout.list_item_types, itemTypeEquality);
+        autoCompleteTextEquality.setAdapter(adapterTypesEquality);
+
+        autoCompleteTextNumericalEx = findViewById(R.id.autoCompleteTextNumericalEx);
+        adapterTypesNumericalEx = new ArrayAdapter<String>(this, R.layout.list_item_types, itemTypeNumericalEx);
+        autoCompleteTextNumericalEx.setAdapter(adapterTypesNumericalEx);
+
+        // Тип знака между частями примера
+        autoCompleteText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+
+                String item = adapterView.getItemAtPosition(position).toString();
+
+                // Обработка нажатий
+                switch (item) {
+                    case "Равенство":
+                        layoutTypeEquality.setVisibility(View.VISIBLE);
+                        layoutTypeNumericalEx.setVisibility(View.GONE);
+                        break;
+                    case "Неравенство":
+                        layoutTypeEquality.setVisibility(View.GONE);
+                        layoutTypeNumericalEx.setVisibility(View.GONE);
+                        break;
+                    case "Числовой пример":
+                        layoutTypeEquality.setVisibility(View.GONE);
+                        layoutTypeNumericalEx.setVisibility(View.VISIBLE);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+
+        // Тип примера если выбрано равенство
+        autoCompleteTextEquality.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+
+                String item2 = adapterView.getItemAtPosition(position).toString();
+
+                // Обработка нажатий
+                switch (item2) {
+                    case "Квадратное":
+
+                        break;
+                    case "Неквадратное":
+
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+
+        // Тип примера если выбран числовой пример
+        autoCompleteTextEquality.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+
+                String item3 = adapterView.getItemAtPosition(position).toString();
+
+                // Обработка нажатий
+                switch (item3) {
+                    case "Сложение":
+
+                        break;
+                    case "Вычитание":
+
+                        break;
+                    case "Деление":
+
+                        break;
+                    case "Умножение":
+
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
 
         loadJSONFromURL(JSON_URL, selectedLevel);
 
