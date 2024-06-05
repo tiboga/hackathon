@@ -26,32 +26,11 @@ body{
     left: 50%;
     top: 50%;
 }
-.background .shape{
-    height: 200px;
-    width: 200px;
-    position: absolute;
-    border-radius: 50%;
-}
-.shape:first-child{
-    background: linear-gradient(
-        #bdda57,
-        #9acd32
-    );
-    left: -30%;
-    top: -30%;
-}
-.shape:last-child{
-    background: linear-gradient(
-        to right,
-        #138808,
-        #5da130
-    );
-    right: -30%;
-    bottom: -50%;
-}
 form{
-    height: 520px;
-    width: 400px;
+    height: 52%;
+    max-height: 520px;
+    width: 40%;
+    max-width: 400px;
     background-color: rgba(255,255,255,0.13);
     position: absolute;
     transform: translate(-50%,-50%);
@@ -72,8 +51,10 @@ form *{
 }
 form h3{
     font-size: 32px;
-    font-weight: 500;
-    line-height: 42px;
+    font-weight: 100%;
+    max-font-weight: 500;
+    line-height: 100%;
+    max-line-height: 42px;
     text-align: center;
 }
 
@@ -85,7 +66,8 @@ label{
 }
 input{
     display: block;
-    height: 50px;
+    height: 100%;
+    max-height: 50px;
     width: 100%;
     background-color: rgba(255,255,255,0.07);
     border-radius: 3px;
