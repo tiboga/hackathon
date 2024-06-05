@@ -212,8 +212,15 @@ def profile():
         }
         filename = generate_progress_charts(user_data, correct_color='green', incorrect_color='orange',
                                             filename='graph.png')
+        rewards = 'Отсутствуют.'
+        if count_points > 15:
+            rewards = 'Награда 1!'
+        if count_points > 30:
+            rewards = 'Награда 1, Награда 2!'
+        if count_points > 50:
+            rewards = 'Награда 1, Награда 2, Награда 3!'
         return render_template("profile.html", username=username, email=mail, points=count_points, greeting=greeting,
-                               filename=filename)
+                               filename=filename, rewards=rewards)
     flash('Вы ещё не вошли в аккаунт!', 'danger')
     return redirect("/")
 
