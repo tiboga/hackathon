@@ -1,7 +1,7 @@
 import os.path
 import random
 from generation import generate_example
-from flask import Flask, render_template, redirect, flash, request, make_response
+from flask import Flask, render_template, redirect, flash, request, make_response, send_from_directory
 from flask_login import LoginManager, current_user, login_required, logout_user, login_user
 from data import db_session, api
 from data.users import User
@@ -9,6 +9,7 @@ import datetime
 from profile_graphs import generate_progress_charts
 from data.achievement_of_user import AchievementOfUser
 from data.tasks_of_users import TaskOfUsers
+from reward_for_achivments import generate_certificate
 
 app = Flask(__name__)
 
@@ -27,7 +28,6 @@ def load_user(user_id):
 # Клиентская часть
 @app.route("/", methods=['GET', 'POST'])
 def main_page():
-
     levels = ['easy', 'medium', 'hard']
     action = ['addition', 'subtraction', 'multiplication', 'division', 'equality', 'quadratic']
     if request.method == 'POST':
@@ -70,7 +70,8 @@ def main_page():
             flag = request.cookies.get('for_missing')
             if flag == "False":
                 level = current_user.level_task
-                type = current_user.type_task if current_user.type_task not in ['numerical', 'equality'] else current_user.type_type_task
+                type = current_user.type_task if current_user.type_task not in ['numerical',
+                                                                                'equality'] else current_user.type_type_task
                 a = generate_example(level=level, example_type=type)
                 if current_user.need_to_update_task == 1:
                     task = TaskOfUsers()
@@ -88,8 +89,10 @@ def main_page():
                     db_sess.commit()
                     return render_template("main_page.html", a=a)
                 else:
-                    current_task = db_sess.query(TaskOfUsers).filter(TaskOfUsers.id==current_user.current_task).first()
-                    return render_template('main_page.html', a=(current_task.task, current_task.right_answer), missing=False)
+                    current_task = db_sess.query(TaskOfUsers).filter(
+                        TaskOfUsers.id == current_user.current_task).first()
+                    return render_template('main_page.html', a=(current_task.task, current_task.right_answer),
+                                           missing=False)
                 # else:
                 #     task = TaskOfUsers()
                 #     task.user_answer = ''
@@ -105,12 +108,13 @@ def main_page():
                 #     db_sess.commit()
                 #     return render_template("main_page.html", a=a)
             else:
-                task = db_sess.query(TaskOfUsers).filter(TaskOfUsers.user_id==current_user.id, TaskOfUsers.resolved==0).first()
+                task = db_sess.query(TaskOfUsers).filter(TaskOfUsers.user_id == current_user.id,
+                                                         TaskOfUsers.resolved == 0).first()
                 if task:
-                    user = db_sess.query(User).filter(User.id==current_user.id).first()
+                    user = db_sess.query(User).filter(User.id == current_user.id).first()
                     user.current_task = task.id
                     db_sess.commit()
-                    return render_template('main_page.html',a=(task.task, task.right_answer), missing=True)
+                    return render_template('main_page.html', a=(task.task, task.right_answer), missing=True)
                 return render_template("main_page.html", a=None, missing=True)
         else:
             level = random.randint(0, 2)
@@ -171,8 +175,6 @@ def registration():
     return render_template('register_page.html', title='Регистрация')
 
 
-
-
 @app.route("/profile")
 def profile():
     if current_user.is_authenticated:
@@ -210,8 +212,15 @@ def profile():
         }
         filename = generate_progress_charts(user_data, correct_color='green', incorrect_color='orange',
                                             filename='graph.png')
+        rewards = 'Отсутствуют.'
+        if count_points > 15:
+            rewards = 'Награда 1!'
+        if count_points > 30:
+            rewards = 'Награда 1, Награда 2!'
+        if count_points > 50:
+            rewards = 'Награда 1, Награда 2, Награда 3!'
         return render_template("profile.html", username=username, email=mail, points=count_points, greeting=greeting,
-                               filename=filename)
+                               filename=filename, rewards=rewards)
     flash('Вы ещё не вошли в аккаунт!', 'danger')
     return redirect("/")
 
@@ -244,18 +253,14 @@ def change_data():
     if current_user.is_authenticated:
         if request.method == 'POST':
             newname = request.form['nickname']
-            password = request.form['password']
             db_sess = db_session.create_session()
             user = db_sess.query(User).filter(User.id == current_user.id).first()
-            if user.check_password(password):
-                flash("Неправильный пароль", 'danger')
-                return redirect('/change_data')
             usernames_in_bd = db_sess.query(User).filter(User.username == newname).first()
             if not usernames_in_bd and len(newname) < 22:
                 old_user = db_sess.query(User).filter(User.id == current_user.id).first()
                 old_user.username = newname
                 db_sess.commit()
-                flash("Никнейм поменян", 'success')
+                flash("'ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤНикнейм изменён!", 'success')
                 return redirect('/profile')
             else:
                 flash("Никнейм уже использован или его длина больше длины 22 символа", 'danger')
@@ -286,7 +291,6 @@ def change_current_task(task_id):
     res = make_response(redirect('/'))
     res.set_cookie('for_missing', "True")
     return res
-
 
 
 @login_required
@@ -325,22 +329,51 @@ def set_type_of_type(type):
     db_sess.commit()
     return redirect('/')
 
+
 @login_required
 @app.route('/outofmissings')
 def out_of_missings():
     res = make_response(redirect('/'))
-    res.set_cookie('for_missing','False')
+    res.set_cookie('for_missing', 'False')
     return res
-@login_required
+
+
 @app.route('/skip')
 def skip():
-    db_sess = db_session.create_session()
-    user = db_sess.query(User).filter(User.id==current_user.id).first()
-    user.need_to_update_task = 1
-    print('skip')
-    db_sess.commit()
+    if current_user.is_authenticated:
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.id == current_user.id).first()
+        user.need_to_update_task = 1
+        print('skip')
+        db_sess.commit()
+    else:
+        flash('Войдите в аккаунт для сохранения пропущенных примеров!', 'danger')
+        return redirect('/')
 
     return redirect('/')
+
+
+@app.route('/reward', methods=['GET', 'POST'])
+def reward():
+    if current_user.is_authenticated:
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.id == current_user.id).first()
+        username = user.username
+        count_points = user.count_points
+        if int(count_points) > 50:
+            template_path = "Pinterest_Download (3).jpg"
+            output_path = "certificate.png"
+            name = username
+            generate_certificate(name, template_path, output_path)
+            return send_from_directory(os.path.dirname(output_path), os.path.basename(output_path), as_attachment=True)
+        else:
+            flash('ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤДля получения грамоты необходимо не менее 50 баллов рейтинга!', 'danger')
+    else:
+        flash('Войдите в аккаунт!', 'danger')
+        return redirect('/')
+    return redirect('/profile')
+
+
 def main():
     if not os.path.exists('db'):
         os.mkdir('db')

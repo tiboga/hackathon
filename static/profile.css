@@ -4,3 +4,31 @@ body {
 div.greeting h1 {
     text-align: center;
     color: white;
+a.button {
+  display: inline-block;
+  background: #2196f3;
+  color: #fff;
+  padding: 12px;
+  border-radius: 3px;
+  text-decoration: none;
+  font-family: Tahoma;
+  font-size: 18px;
+  line-height: 1;
+  font-weight: 100;
+}
+
+div {
+  margin: 24px;
+  text-align: center;
+}
+.img{
+  width: 100%;
+  height: auto;
+}
+@media only screen and (max-width: 840px) {
+  .img {
+    display: block;
+    width: auto;
+    padding: 50px;
+  }
+}

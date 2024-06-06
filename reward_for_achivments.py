@@ -56,9 +56,3 @@ def generate_certificate(name, template_path, output_path):
     draw.text(name_position, name, fill="black", font=name_font)
 
     template.save(output_path)
-
-
-template_path = "Pinterest_Download (3).jpg"
-output_path = "certificate.png"
-name = "Александр Булгаков"
-generate_certificate(name, template_path, output_path)
