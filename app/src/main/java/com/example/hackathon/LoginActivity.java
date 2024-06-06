@@ -1,5 +1,10 @@
 package com.example.hackathon;
 
+import com.example.hackathon.CurrentUser;
+
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.hackathon.UrlInfo;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
@@ -25,13 +30,18 @@ import com.google.android.material.snackbar.Snackbar;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
 
     Button login_button, skip_btn;
-    private static final String LOGIN_URL = "http://api/user/login";
+    private static final String LOGIN_URL = UrlInfo.ret_url() + "/api/user/login";
     EditText editTextEmail, editTextPassword;
     TextView textViewCreate;
     @Override
@@ -42,12 +52,13 @@ public class LoginActivity extends AppCompatActivity {
         skip_btn = findViewById(R.id.skip_btn);
         login_button = findViewById(R.id.login_button);
         textViewCreate = findViewById(R.id.textViewCreate);
-
+        editTextEmail = findViewById(R.id.editTextEmail);
+        editTextPassword = findViewById(R.id.editTextPassword);
         login_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 loginUser();
-                snack();
+//                snack();
             }
 
         });
@@ -74,8 +85,6 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
     private void snack() {
-        editTextEmail = findViewById(R.id.editTextEmail);
-        editTextPassword = findViewById(R.id.editTextPassword);
 
         if (TextUtils.isEmpty(editTextEmail.getText().toString())) {
             snackbarMake("Упс! Вы не ввели почту!");
@@ -101,19 +110,38 @@ public class LoginActivity extends AppCompatActivity {
     private void loginUser() {
         String login = editTextEmail.getText().toString();
         String password = editTextPassword.getText().toString();
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, LOGIN_URL,
-                new Response.Listener<String>() {
+        Map<String, String> postParam = new HashMap<String, String>();
+        postParam.put("login", login);
+        postParam.put("password", password);
+        JsonObjectRequest stringRequest = new JsonObjectRequest
+                (Request.Method.POST,
+                        LOGIN_URL,
+                        new JSONObject(postParam),
+                new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(String response) {
+                    public void onResponse(JSONObject response) {
                         try {
-                            JSONObject jsonObject = new JSONObject(response);
-                            String status = jsonObject.getString("Status");
-                            boolean loginSuccess = jsonObject.getBoolean("login");
+                            String status = response.getString("Status");
+                            boolean loginSuccess = response.getBoolean("login");
 
                             if (status.equals("ok") && loginSuccess) {
-                                int userId = jsonObject.getInt("id");
-                                Toast.makeText(LoginActivity.this, "Успешный вход! ID: " + userId, Toast.LENGTH_LONG).show();
+                                int id = response.getInt("id");
+                                CurrentUser currentUser = new CurrentUser();
+                                currentUser.login(id);
+                                FileOutputStream fos = null;
+                                try {
+                                    fos = openFileOutput("current_user.txt", MODE_APPEND);
+                                    String uid = ";" + Integer.toString(id);
+                                    fos.write(uid.getBytes());
+                                } catch (IOException ex) {
+                                } finally {
+                                    try {
+                                        if (fos != null)
+                                            fos.close();
+                                    } catch (IOException ex) {
+                                    }
+                                }
+//                                Toast.makeText(LoginActivity.this, "Успешный вход! ID: " + userId, Toast.LENGTH_LONG).show();
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                 startActivity(intent);
                                 finish();

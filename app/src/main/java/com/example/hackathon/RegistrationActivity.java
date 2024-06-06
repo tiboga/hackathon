@@ -1,5 +1,10 @@
 package com.example.hackathon;
 
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import com.example.hackathon.UrlInfo;
+import com.example.hackathon.CurrentUser;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
@@ -24,13 +29,18 @@ import com.google.android.material.snackbar.Snackbar;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
 public class RegistrationActivity extends AppCompatActivity {
 
     Button backButton, reg_button;
-    private static final String REGISTER_URL = "http://api/user/auth";
+    private static final String REGISTER_URL = UrlInfo.ret_url() + "/api/user/auth";
     TextView textViewReg;
     EditText editTextEmail, editTextPassword, editTextRepeatPassword, editTextName;
     @Override
@@ -110,22 +120,45 @@ public class RegistrationActivity extends AppCompatActivity {
             Toast.makeText(this, "Passwords do not match", Toast.LENGTH_LONG).show();
             return;
         }
+        Map<String, String> postParam = new HashMap<String, String>();
+        postParam.put("login", login);
+        postParam.put("username", username);
+        postParam.put("password", password);
+        JsonObjectRequest stringRequest = new JsonObjectRequest
+                (Request.Method.POST, REGISTER_URL,new JSONObject(postParam),
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, REGISTER_URL,
-                new Response.Listener<String>() {
+                new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(String response) {
+                    public void onResponse(JSONObject response) {
                         try {
-                            JSONObject jsonObject = new JSONObject(response);
-                            String status = jsonObject.getString("Status");
+                            String status = response.getString("Status");
 
                             if (status.equals("ok")) {
+                                int user_id = response.getInt("user_id");
+                                FileOutputStream fos = null;
+
+
+                                try {
+                                    fos = openFileOutput("current_user.txt", MODE_APPEND);
+                                    String uid = Integer.toString(user_id);
+                                    fos.write(uid.getBytes());
+                                } catch (IOException ex) {
+                                } finally {
+                                    try {
+                                        if (fos != null)
+                                            fos.close();
+                                    } catch (IOException ex) {
+                                    }
+                                }
                                 Toast.makeText(RegistrationActivity.this, "Registration successful!", Toast.LENGTH_LONG).show();
+
                                 Intent intent = new Intent(RegistrationActivity.this, LoginActivity.class);
                                 startActivity(intent);
                                 finish();
+
+
                             } else {
-                                String description = jsonObject.getString("description");
+                                String description = response.getString("description");
                                 Toast.makeText(RegistrationActivity.this, "Ошибка: " + description, Toast.LENGTH_LONG).show();
                             }
                         } catch (JSONException e) {

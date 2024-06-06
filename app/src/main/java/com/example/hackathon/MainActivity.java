@@ -1,5 +1,8 @@
 package com.example.hackathon;
 
+import com.example.hackathon.CurrentUser;
+import com.example.hackathon.UrlInfo;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
@@ -31,13 +34,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String JSON_URL = "https://6ba2-176-194-239-186.ngrok-free.app/api/task/new";
+    private static final String JSON_URL = UrlInfo.ret_url() + "/api/task/new";
     private LinearLayout easyLevel;
     private LinearLayout mediumLevel;
     private LinearLayout hardLevel;
@@ -45,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     TextView privacy_policy;
     TextView exam;
     String selectedLevel = "easy";
-
+    String selectedType = "addition";
     RelativeLayout layoutTypeEquality, layoutTypeNumericalEx;
 
     // Тип знака между частями примера
@@ -62,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
     String[] itemTypeNumericalEx = {"Сложение", "Вычитание", "Деление", "Умножение"};
     AutoCompleteTextView autoCompleteTextNumericalEx;
     ArrayAdapter<String> adapterTypesNumericalEx;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +103,68 @@ public class MainActivity extends AppCompatActivity {
         autoCompleteTextNumericalEx = findViewById(R.id.autoCompleteTextNumericalEx);
         adapterTypesNumericalEx = new ArrayAdapter<String>(this, R.layout.list_item_types, itemTypeNumericalEx);
         autoCompleteTextNumericalEx.setAdapter(adapterTypesNumericalEx);
+//        FileOutputStream fos = null;
+//        try {
+//            fos = openFileOutput("current_user.txt", MODE_APPEND);
+//            fos.write("sssssssss".getBytes());
+//            Toast.makeText(this, "Файл сохранен", Toast.LENGTH_SHORT).show();
+//        }
+//        catch(IOException ex) {
+//
+//            Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
+//        }
+//        finally{
+//            try{
+//                if(fos!=null)
+//                    fos.close();
+//            }
+//            catch(IOException ex){
+//
+//                Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
+//            }
+//        }
+//        {
+//            try {
+//                JSONObject obj = new JSONObject((Map) new FileReader("CurrentUser.json"));
+//                try {
+//                    String str = obj.getString("id");
+//                    privacy_policy.setText(str);
+//                } catch (JSONException e) {
+//                    throw new RuntimeException(e);
+//                }
+//            } catch (FileNotFoundException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
+        FileInputStream fin = null;
+        CurrentUser currentUser = new CurrentUser();
+        try {
+            fin = openFileInput("current_user.txt");
+            byte[] bytes = new byte[fin.available()];
+            fin.read(bytes);
+            String text = new String (bytes);
+            String[] sp = text.split(";");
+            if (sp.length >= 1){
+                text = sp[sp.length - 1];
+                currentUser.login(Integer.parseInt(text));
+            }
+            privacy_policy.setText(text);
+        }
+        catch(IOException ex) {
+
+            Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+        finally{
+
+            try{
+                if(fin!=null)
+                    fin.close();
+            }
+            catch(IOException ex){
+
+                Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
 
         // Тип знака между частями примера
         autoCompleteText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -107,14 +178,20 @@ public class MainActivity extends AppCompatActivity {
                     case "Равенство":
                         layoutTypeEquality.setVisibility(View.VISIBLE);
                         layoutTypeNumericalEx.setVisibility(View.GONE);
+                        selectedType = "equality";
+                        loadJSONFromURL(JSON_URL);
                         break;
                     case "Неравенство":
                         layoutTypeEquality.setVisibility(View.GONE);
                         layoutTypeNumericalEx.setVisibility(View.GONE);
+                        selectedType = "x_inequality";
+                        loadJSONFromURL(JSON_URL);
                         break;
                     case "Числовой пример":
                         layoutTypeEquality.setVisibility(View.GONE);
                         layoutTypeNumericalEx.setVisibility(View.VISIBLE);
+                        selectedType = "division";
+                        loadJSONFromURL(JSON_URL);
                         break;
                     default:
                         break;
@@ -128,14 +205,16 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 
                 String item2 = adapterView.getItemAtPosition(position).toString();
-
+                privacy_policy.setText(item2);
                 // Обработка нажатий
                 switch (item2) {
                     case "Квадратное":
-
+                        selectedType = "quadratic";
+                        loadJSONFromURL(JSON_URL);
                         break;
                     case "Неквадратное":
-
+                        selectedType = "equality";
+                        loadJSONFromURL(JSON_URL);
                         break;
                     default:
                         break;
@@ -144,25 +223,29 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Тип примера если выбран числовой пример
-        autoCompleteTextEquality.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        autoCompleteTextNumericalEx.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 
                 String item3 = adapterView.getItemAtPosition(position).toString();
-
+                privacy_policy.setText(item3);
                 // Обработка нажатий
                 switch (item3) {
                     case "Сложение":
-
+                        selectedType = "addition";
+                        loadJSONFromURL(JSON_URL);
                         break;
                     case "Вычитание":
-
+                        selectedType = "subtraction";
+                        loadJSONFromURL(JSON_URL);
                         break;
                     case "Деление":
-
+                        selectedType = "division";
+                        loadJSONFromURL(JSON_URL);
                         break;
                     case "Умножение":
-
+                        selectedType = "multiplication";
+                        loadJSONFromURL(JSON_URL);
                         break;
                     default:
                         break;
@@ -170,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        loadJSONFromURL(JSON_URL, selectedLevel);
+        loadJSONFromURL(JSON_URL);
 
         profile.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
@@ -195,21 +278,21 @@ public class MainActivity extends AppCompatActivity {
             resetCircles();
             selectedLevel = "easy";
             easyLevel.getChildAt(0).setBackground(ContextCompat.getDrawable(MainActivity.this, R.drawable.circle_selected_green));
-            loadJSONFromURL(JSON_URL, selectedLevel);
+            loadJSONFromURL(JSON_URL);
         });
 
         mediumLevel.setOnClickListener(v -> {
             resetCircles();
             selectedLevel = "medium";
             mediumLevel.getChildAt(0).setBackground(ContextCompat.getDrawable(MainActivity.this, R.drawable.circle_selected_yellow));
-            loadJSONFromURL(JSON_URL, selectedLevel);
+            loadJSONFromURL(JSON_URL);
         });
 
         hardLevel.setOnClickListener(v -> {
             resetCircles();
             selectedLevel = "hard";
             hardLevel.getChildAt(0).setBackground(ContextCompat.getDrawable(MainActivity.this, R.drawable.circle_selected_red));
-            loadJSONFromURL(JSON_URL, selectedLevel);
+            loadJSONFromURL(JSON_URL);
         });
     }
 
@@ -219,10 +302,11 @@ public class MainActivity extends AppCompatActivity {
         hardLevel.getChildAt(0).setBackground(ContextCompat.getDrawable(MainActivity.this, R.drawable.circle_selector_red));
     }
 
-    private void loadJSONFromURL(String url, String level) {
+    private void loadJSONFromURL(String url) {
         Map<String, String> postParam = new HashMap<String, String>();
         postParam.put("level", selectedLevel);
-        postParam.put("example_type", "addition");
+        postParam.put("example_type", selectedType);
+
         postParam.put("user_id", "1");
         JsonObjectRequest stringRequest = new JsonObjectRequest
                 (Request.Method.POST, url, new JSONObject(postParam),
@@ -234,7 +318,8 @@ public class MainActivity extends AppCompatActivity {
                                     String string_2 = response.getString("task");
                                     String string_3 = response.getString("true_answer");
                                     String string_4 = response.getString("task_id");
-                                    exam.setText(string_1 + ";" +string_2 + ";" +string_3 + ";" +string_4);
+
+                                    exam.setText(string_2);
                                 } catch (JSONException e) {
                                     throw new RuntimeException(e);
                                 }
