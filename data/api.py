@@ -38,7 +38,8 @@ def add_user():
         user.set_password(dict_of_data['password'])
         db_sess.add(user)
         db_sess.commit()
-        return jsonify({'Status': 'ok'})
+        user_id = max([elem.id for elem in db_sess.query(User).filter(User.id).all()])
+        return jsonify({'Status': 'ok', "user_id":user_id})
 
 
 @blueprint.route('/api/user/login', methods=["POST"])
@@ -58,6 +59,9 @@ def login():
 
 @blueprint.route("/api/task/new", methods=["POST"])
 def new_task():
+    points_of_level = {'easy': 1,
+                       'medium': 2,
+                       'hard': 3}
     dict_of_data = request.json  # level, example_type, user_id
     if dict_of_data['level'] not in ('easy', 'medium', 'hard'):
         return jsonify(
@@ -70,7 +74,9 @@ def new_task():
                                        "['addition', 'subtraction', "
                                        "'multiplication', 'division', 'equality', 'quadratic', "
                                        "'x_inequality'}"})
+    print(dict_of_data)
     task = generation.generate_example(level=dict_of_data['level'], example_type=dict_of_data['example_type'])
+
     db_sess = db_session.create_session()
     task_of_user = TaskOfUsers()
     task_of_user.task = task[0]
@@ -78,11 +84,12 @@ def new_task():
     task_of_user.right_answer = task[1]
     task_of_user.resolved = 0
     task_of_user.user_id = dict_of_data['user_id']
+    task_of_user.adding_points = points_of_level[dict_of_data['level']]
     db_sess.add(task_of_user)
     db_sess.commit()
 
     return jsonify({"Status": 'ok', 'task': task[0], 'true_answer': task[1],
-                    'task_id': max([elem.id for elem in db_sess.query(TaskOfUsers).all()])})
+                    'task_id': str(max([elem.id for elem in db_sess.query(TaskOfUsers).all()]))})
 
 
 @blueprint.route('/api/task/check', methods=["POST"])
