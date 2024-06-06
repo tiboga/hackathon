@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout easyLevel;
     private LinearLayout mediumLevel;
     private LinearLayout hardLevel;
-    Button analytics, profile;
+    Button analytics, profile, next_button, check_button;
     TextView privacy_policy;
     TextView exam;
     String selectedLevel = "easy";
@@ -85,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
         mediumLevel = findViewById(R.id.mediumLevel);
         hardLevel = findViewById(R.id.hardLevel);
         privacy_policy = findViewById(R.id.privacy_policy);
+        next_button = findViewById(R.id.next_button);
+        check_button = findViewById(R.id.check_button);
 
         layoutTypeEquality = findViewById(R.id.layoutTypeEquality);
         layoutTypeNumericalEx = findViewById(R.id.layoutTypeNumericalEx);
@@ -136,35 +138,7 @@ public class MainActivity extends AppCompatActivity {
 //                throw new RuntimeException(e);
 //            }
 //        }
-        FileInputStream fin = null;
-        CurrentUser currentUser = new CurrentUser();
-        try {
-            fin = openFileInput("current_user.txt");
-            byte[] bytes = new byte[fin.available()];
-            fin.read(bytes);
-            String text = new String (bytes);
-            String[] sp = text.split(";");
-            if (sp.length >= 1){
-                text = sp[sp.length - 1];
-                currentUser.login(Integer.parseInt(text));
-            }
-            privacy_policy.setText(text);
-        }
-        catch(IOException ex) {
 
-            Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-        finally{
-
-            try{
-                if(fin!=null)
-                    fin.close();
-            }
-            catch(IOException ex){
-
-                Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        }
 
         // Тип знака между частями примера
         autoCompleteText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -190,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
                     case "Числовой пример":
                         layoutTypeEquality.setVisibility(View.GONE);
                         layoutTypeNumericalEx.setVisibility(View.VISIBLE);
-                        selectedType = "division";
+                        selectedType = "addition";
                         loadJSONFromURL(JSON_URL);
                         break;
                     default:
@@ -294,6 +268,38 @@ public class MainActivity extends AppCompatActivity {
             hardLevel.getChildAt(0).setBackground(ContextCompat.getDrawable(MainActivity.this, R.drawable.circle_selected_red));
             loadJSONFromURL(JSON_URL);
         });
+        next_button.setOnClickListener(v->
+        {
+            loadJSONFromURL(JSON_URL);
+        });
+        check_button.setOnClickListener(v->
+        {
+            FileInputStream fin = null;
+            try {
+                fin = openFileInput("current_task.txt");
+                byte[] bytes = new byte[fin.available()];
+                fin.read(bytes);
+                String text = new String(bytes);
+                String[] sp = text.split(";");
+                if (sp.length >= 1) {
+                    text = sp[sp.length - 1];
+                }
+
+                privacy_policy.setText(text);
+            } catch (IOException ex) {
+
+                Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
+            } finally {
+
+                try {
+                    if (fin != null)
+                        fin.close();
+                } catch (IOException ex) {
+
+                    Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     private void resetCircles() {
@@ -303,11 +309,40 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadJSONFromURL(String url) {
+        FileInputStream fin = null;
+        int int_id;
+        int_id = 0;
+        try {
+            fin = openFileInput("current_user.txt");
+            byte[] bytes = new byte[fin.available()];
+            fin.read(bytes);
+            String text = new String(bytes);
+            String[] sp = text.split(";");
+            if (sp.length >= 1) {
+                text = sp[sp.length - 1];
+                int_id = Integer.parseInt(text);
+            }
+        } catch (IOException ex) {
+
+            Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
+        } finally {
+
+            try {
+                if (fin != null)
+                    fin.close();
+            } catch (IOException ex) {
+
+                Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
         Map<String, String> postParam = new HashMap<String, String>();
         postParam.put("level", selectedLevel);
         postParam.put("example_type", selectedType);
-
-        postParam.put("user_id", "1");
+        if (int_id == 0) {
+            postParam.put("user_id", "MOB");
+        } else {
+            postParam.put("user_id", Integer.toString(int_id));
+        }
         JsonObjectRequest stringRequest = new JsonObjectRequest
                 (Request.Method.POST, url, new JSONObject(postParam),
                         new Response.Listener<JSONObject>() {
@@ -318,7 +353,23 @@ public class MainActivity extends AppCompatActivity {
                                     String string_2 = response.getString("task");
                                     String string_3 = response.getString("true_answer");
                                     String string_4 = response.getString("task_id");
-
+                                            FileOutputStream fos = null;
+                                    try {
+                                        fos = openFileOutput("current_task.txt", MODE_APPEND);
+                                        String out_string;
+                                        out_string = ":" + string_2 + "," + string_3 + "," + string_4;
+                                        fos.write(out_string.getBytes());
+                                    }
+                                    catch(IOException ex) {
+                                    }
+                                    finally{
+                                        try{
+                                            if(fos!=null)
+                                                fos.close();
+                                        }
+                                        catch(IOException ex){
+                                        }
+                                    }
                                     exam.setText(string_2);
                                 } catch (JSONException e) {
                                     throw new RuntimeException(e);

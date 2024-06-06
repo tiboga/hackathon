@@ -51,6 +51,11 @@ public class RegistrationActivity extends AppCompatActivity {
         reg_button = findViewById(R.id.reg_button);
         backButton = findViewById(R.id.backButton);
         textViewReg = findViewById(R.id.textViewReg);
+        editTextEmail = findViewById(R.id.editTextEmail);
+        editTextPassword = findViewById(R.id.editTextPassword);
+        editTextRepeatPassword = findViewById(R.id.editTextRepeatPassword);
+        editTextName = findViewById(R.id.editTextName);
+
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -78,11 +83,6 @@ public class RegistrationActivity extends AppCompatActivity {
         });
     }
     private void snack() {
-        editTextEmail = findViewById(R.id.editTextEmail);
-        editTextPassword = findViewById(R.id.editTextPassword);
-        editTextRepeatPassword = findViewById(R.id.editTextRepeatPassword);
-        editTextName = findViewById(R.id.editTextName);
-
         if (TextUtils.isEmpty(editTextEmail.getText().toString())) {
             snackbarMake("Упс! Вы не ввели почту!");
             return;
@@ -140,7 +140,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
                                 try {
                                     fos = openFileOutput("current_user.txt", MODE_APPEND);
-                                    String uid = Integer.toString(user_id);
+                                    String uid = ";" + Integer.toString(user_id);
                                     fos.write(uid.getBytes());
                                 } catch (IOException ex) {
                                 } finally {
