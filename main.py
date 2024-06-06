@@ -61,7 +61,7 @@ def main_page():
                                             ), missing=False)
 
     if request.method == 'GET':
-
+        print()
         points_of_level = {'easy': 1,
                            'medium': 2,
                            'hard': 3}

@@ -46,8 +46,8 @@ def generate_progress_charts(user_data, correct_color='green', incorrect_color='
     bar_width = 0.4
 
     # Построение столбчатого графика
-    ax.bar(x - bar_width/2, correct, width=bar_width, color=correct_color, label='Правильные решения')
-    ax.bar(x + bar_width/2, incorrect, width=bar_width, color=incorrect_color, label='Неправильные решения')
+    ax.bar(x - bar_width/2, correct, width=bar_width, color=correct_color, label='Решено')
+    ax.bar(x + bar_width/2, incorrect, width=bar_width, color=incorrect_color, label='Не решено')
 
     # Добавляем заголовок и метки осей
     ax.set_title('Прогресс пользователя за период')

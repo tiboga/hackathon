@@ -4,10 +4,11 @@
 
 {% block content %}
 <link rel="stylesheet" type="text/css" href="static/main.css">
-<h2 align="center" style="color:#E0FFFF">Математический генератор</h2>
+<h2 align="center">Математический генератор</h2>
 <style>
 body {
-    background-color: #434750;
+    color: white;
+    background-color: #000000;
 }
 form{
     height: 52%;
@@ -42,6 +43,7 @@ input{
     height: 50px;
     width: 100%;
     background-color: rgba(242, 221, 198, 0.07);
+    border: none;
     border-radius: 3px;
     padding: 0 10px;
     margin-top: 8px;
@@ -64,10 +66,21 @@ input{
 .dropdown:hover .dropdown-content {
     display: block;
 }
-
+.buttons{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30%;
+}
+.dropdown{
+    margin-right: 2%;
+}
+.dropdown:last-child{
+    margin-right: 0px;
+}
 </style>
 {%if current_user.is_authenticated%}
-<div class="dropdown">
+<div class="dropdown_list" style="display: flex; justify-content: center;">
+    <div class="dropdown">
   <button class="btn btn-secondary dropdown-toggle" type="button" id="level" data-bs-toggle="dropdown" aria-expanded="false">
     Уровень сложности
   </button>
@@ -109,6 +122,7 @@ input{
     <li><a class="dropdown-item" href="/typetypetask/equality">Неквадратное</a></li>
   </ul>
 </div>
+</div>
 {%endif%}
 {%endif%}
 {%if missing%}
@@ -120,11 +134,12 @@ input{
 <form method="post" action="/">
     <h3>{{a[0]}}</h3>
     <label class="form-label">
-        <input type="text" name="answer" placeholder="Ответ">
+        <input type="text" name="answer" placeholder="Ответ" style="color:white; ">
     </label>
-
-    <button type="submit" class="btn btn-primary">Проверить</button>
-    <a href='/skip' type="submit" class="btn btn-primary">Пропустить</a>
+    <div class="buttons">
+          <button type="submit" class="btn btn-primary">Проверить</button>
+          <a href='/skip' type="submit" class="btn btn-primary">Пропустить</a>
+    </div>
 </form>
 {%else%}
 <h4>Вы решили все пропущенные примеры</h4>
