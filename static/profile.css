@@ -1,9 +1,13 @@
 body {
-  background: #151719;
+  background: #000000;
 }
 div.greeting h1 {
     text-align: center;
     color: white;
+div.greeting h2 {
+    text-align: center;
+    color: white;
+}
 a.button {
   display: inline-block;
   background: #2196f3;
@@ -21,14 +25,7 @@ div {
   margin: 24px;
   text-align: center;
 }
-.img{
-  width: 100%;
-  height: auto;
-}
-@media only screen and (max-width: 840px) {
-  .img {
+.static_img{
     display: block;
-    width: auto;
-    padding: 50px;
-  }
+    margin: 0 auto;
 }
