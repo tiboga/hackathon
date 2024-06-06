@@ -107,7 +107,6 @@
                 android:layout_marginTop="60dp"
                 android:layout_marginStart="215dp"
                 android:paddingStart="20dp"
-                android:background="@drawable/text_background"
                 android:elevation="7dp"
                 android:ems="20"
                 android:hint="@string/answer"

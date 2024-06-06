@@ -5,12 +5,14 @@ import com.example.hackathon.UrlInfo;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -55,6 +57,12 @@ public class MainActivity extends AppCompatActivity {
     String selectedLevel = "easy";
     String selectedType = "addition";
     RelativeLayout layoutTypeEquality, layoutTypeNumericalEx;
+    EditText editTextAnswer;
+
+    // обводка
+    private Drawable borderRed;
+    private Drawable borderGreen;
+    private Drawable borderDefault;
 
     // Тип знака между частями примера
     String[] itemType = {"Равенство", "Неравенство", "Числовой пример"};
@@ -87,6 +95,12 @@ public class MainActivity extends AppCompatActivity {
         privacy_policy = findViewById(R.id.privacy_policy);
         next_button = findViewById(R.id.next_button);
         check_button = findViewById(R.id.check_button);
+        editTextAnswer = findViewById(R.id.editTextAnswer);
+
+        // обводка
+        borderRed = ContextCompat.getDrawable(this, R.drawable.border_red);
+        borderGreen = ContextCompat.getDrawable(this, R.drawable.border_green);
+        borderDefault = ContextCompat.getDrawable(this, R.drawable.border_default);
 
         layoutTypeEquality = findViewById(R.id.layoutTypeEquality);
         layoutTypeNumericalEx = findViewById(R.id.layoutTypeNumericalEx);
@@ -105,6 +119,9 @@ public class MainActivity extends AppCompatActivity {
         autoCompleteTextNumericalEx = findViewById(R.id.autoCompleteTextNumericalEx);
         adapterTypesNumericalEx = new ArrayAdapter<String>(this, R.layout.list_item_types, itemTypeNumericalEx);
         autoCompleteTextNumericalEx.setAdapter(adapterTypesNumericalEx);
+
+        editTextAnswer.setBackground(borderDefault);
+
 //        FileOutputStream fos = null;
 //        try {
 //            fos = openFileOutput("current_user.txt", MODE_APPEND);
@@ -274,33 +291,48 @@ public class MainActivity extends AppCompatActivity {
         });
         check_button.setOnClickListener(v->
         {
-            FileInputStream fin = null;
-            try {
-                fin = openFileInput("current_task.txt");
-                byte[] bytes = new byte[fin.available()];
-                fin.read(bytes);
-                String text = new String(bytes);
-                String[] sp = text.split(";");
-                if (sp.length >= 1) {
-                    text = sp[sp.length - 1];
-                }
+            String userInput = editTextAnswer.getText().toString(); // Получаем введенный ответ
+            String referenceText = loadReferenceText(); // Загружаем из файла ответ
 
-                privacy_policy.setText(text);
-            } catch (IOException ex) {
-
-                Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
-            } finally {
-
-                try {
-                    if (fin != null)
-                        fin.close();
-                } catch (IOException ex) {
-
-                    Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            }
+            validateEditText(userInput, referenceText);
         });
     }
+    private String loadReferenceText() {
+        FileInputStream fin = null;
+        String text = "";
+        try {
+            fin = openFileInput("current_task.txt");
+            byte[] bytes = new byte[fin.available()];
+            fin.read(bytes);
+            text = new String(bytes);
+            String[] sp = text.split(";");
+            if (sp.length >= 1) {
+                text = sp[sp.length - 1];
+            }
+        } catch (IOException ex) {
+            Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
+        } finally {
+            try {
+                if (fin != null)
+                    fin.close();
+            } catch (IOException ex) {
+                Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+        return text;
+    }
+    private boolean isValid(String userInput, String referenceText) {
+        // Проверка правильности ответа
+        return userInput.equals(referenceText);
+    }
+    private void validateEditText(String userInput, String referenceText) {
+        if (isValid(userInput, referenceText)) {
+            editTextAnswer.setBackground(borderGreen);
+        } else {
+            editTextAnswer.setBackground(borderRed);
+        }
+    }
+
 
     private void resetCircles() {
         easyLevel.getChildAt(0).setBackground(ContextCompat.getDrawable(MainActivity.this, R.drawable.circle_selector_green));
