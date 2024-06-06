@@ -1,6 +1,6 @@
 # 1. Скачивание всех необходимых библиотек.
 Первое, что нужно знать, это то, что проект написан на Python. Убедимся, что он установлен. В противном случае скачаем по ссылке: https://www.python.org/getit/
-![[Pasted image 20240606215659.png]]
+![[[Pasted image 20240606215659.png](https://github.com/tiboga/hackathon/blob/Alexandro/Pasted%20image%2020240606215659.png)]]
 После этого открываем консоль и скачиваем все нужные библиотеки:
 ```bash
 pip install flask flask-login flask-wtf flask-restful sqlalchemy requests waitress matplotlib
@@ -15,11 +15,11 @@ git clone https://github.com/tiboga/hackathon.git
 Мы пользовались IDE **PyСharm Community Edition** и проект работал стабильно.
 После открытия коренной папки советуем проверить наличие шага [[#1. Скачивание всех необходимых библиотек.]]
 Открываем файл main.py
-![[Pasted image 20240606221536.png]]
+![[[Pasted image 20240606221536.png](https://github.com/tiboga/hackathon/blob/Alexandro/Pasted%20image%2020240606221536.png)]]
 Видим это:
-![[Pasted image 20240606221657.png]]
+![[[Pasted image 20240606221657.png](https://github.com/tiboga/hackathon/blob/Alexandro/Pasted%20image%2020240606221657.png)]]
 Запускаем его нажатием на кнопку.
-![[Pasted image 20240606221750.png]]
+![[[Pasted image 20240606221750.png](https://github.com/tiboga/hackathon/blob/Alexandro/Pasted%20image%2020240606221750.png)]]
 В консоли появляется сообщение:
 ```bash
 Подключение к базе данных по адресу sqlite:///db/main.db?check_same_thread=False
