@@ -41,10 +41,18 @@
 <div class="user_info">
     <div class="greeting">
         <h1>{{greeting}} {{username}}!</h1>
-    </div>
+<div class="dropdown" style="text-align: center">
+  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+    Ваши награды
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+    <li><a class="dropdown-item" href="#">{{reward[0]}}</a></li>
+    <li><a class="dropdown-item" href="#">{{reward[1]}}</a></li>
+    <li><a class="dropdown-item" href="#">{{reward[2]}}</a></li>
+  </ul>
+</div>
     <div class="points">
         <h2 style="position:fixed; left:10px; top:60px; color:gray;">Счёт: {{points}} баллов.</h2>
-        <h2 style="color:white">Ваши награды: {{rewards}}</h2>
     </div>
 </div>
 <div class="other">
