@@ -265,7 +265,7 @@ def change_data():
                 old_user = db_sess.query(User).filter(User.id == current_user.id).first()
                 old_user.username = newname
                 db_sess.commit()
-                flash("'ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤНикнейм изменён!", 'success')
+                flash("Никнейм изменён!", 'success')
                 return redirect('/profile')
             else:
                 flash("Никнейм уже использован или его длина больше длины 22 символа", 'danger')
@@ -372,7 +372,7 @@ def reward():
             generate_certificate(name, template_path, output_path)
             return send_from_directory(os.path.dirname(output_path), os.path.basename(output_path), as_attachment=True)
         else:
-            flash('ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤДля получения грамоты необходимо не менее 50 баллов рейтинга!', 'danger')
+            flash('Для получения грамоты необходимо не менее 50 баллов рейтинга!', 'danger')
     else:
         flash('Войдите в аккаунт!', 'danger')
         return redirect('/')
